@@ -18,6 +18,6 @@ setup(
     },
     license='Apache 2.0',
     install_requires=[],
-    packages=find_packages(where='src'),  # List of packages to include
+    py_modules = ["zippeekiyay"],
     package_dir={'': 'src'},
 )
