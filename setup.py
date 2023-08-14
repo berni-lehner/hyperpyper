@@ -18,6 +18,6 @@ setup(
     },
     license='Apache 2.0',
     install_requires=[],
-    py_modules = ["zippeekiyay"],
-    package_dir={'': 'src'},
+    packages=find_packages(),
+    package_dir={'': 'transights'},
 )
