@@ -1,2 +1,2 @@
 # torch-transights
- Insights with Transforms
+ Insights with Transforms: Automatic collation of full batch output from transformation pipelines.
