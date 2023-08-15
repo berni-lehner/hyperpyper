@@ -27,7 +27,7 @@ class DataLoaderAggregator:
 
 
     def collate_fn(self, batch_list):
-    """
+        """
         Aggregates a list of mini-batches into a full batch.
 
         Args:
