@@ -3,6 +3,8 @@ import numpy as np
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
+from ..dataset import GenericDataset
+
 
 class DataLoaderAggregator:
     """

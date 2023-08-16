@@ -19,5 +19,5 @@ setup(
     license='Apache 2.0',
     install_requires=[],
     packages=find_packages(),
-    package_dir={'': 'transights'},
+    #package_dir={'': 'transights'},
 )
