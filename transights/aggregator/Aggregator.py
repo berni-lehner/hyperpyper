@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
 from ..dataset import GenericDataset
+from ..utils import Pickler
 
 
 class DataLoaderAggregator:
@@ -67,33 +68,46 @@ class DataLoaderAggregator:
         return full_batch
 
     
-    def fit(self):
+    def fit(self, cache_file=None):
         """
         Alias for transform(). Aggregates mini-batches and returns the full batch.
 
         Returns:
         dict: The aggregated full batch.
         """
-        return self.transform()
+        return self.transform(cache_file)
 
     
-    def fit_transform(self):
+    def fit_transform(self, cache_file=None):
         """
         Alias for transform(). Aggregates mini-batches and returns the full batch.
 
         Returns:
         dict: The aggregated full batch.
         """
-        return self.transform()
+        return self.transform(cache_file)
 
     
-    def transform(self):
+    def transform(self, cache_file=None):
         """
         Aggregates mini-batches and returns the full batch.
 
         Returns:
         dict: The aggregated full batch.
         """
+        if cache_file is not None:
+            if Path(cache_file).exist():
+                self._full_batch = Pickler.load_data(cache_file)
+            else:
+                self._full_batch = self.__transform()
+                Pickler.save_data(self._full_batch, cache_file)
+        else:
+            self._full_batch = self.__transform()
+            
+        return self._full_batch        
+ 
+            
+    def __transform(self):
         # Avoid unnecessary transforms
         if self._full_batch is None:
             mini_batches = []
