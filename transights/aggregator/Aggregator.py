@@ -97,7 +97,7 @@ class DataLoaderAggregator:
         dict: The aggregated full batch.
         """
         if cache_file is not None:
-            if Path(cache_file).exist():
+            if Path(cache_file).exists():
                 self._full_batch = Pickler.load_data(cache_file)
             else:
                 self._full_batch = self.__transform()
