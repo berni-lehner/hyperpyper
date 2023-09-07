@@ -3,7 +3,7 @@ from typing import Union, List, Optional
 
 class FolderScanner:
     @staticmethod
-    def get_files(folders: Union[Path, str, List[Union[Path, str]]], extensions: Optional[Union[str, List[str]]] = None) -> List[Path]:
+    def get_files(folders: Union[Path, str, List[Union[Path, str]]], extensions: Optional[Union[str, List[str]]]=None, recursive=False) -> List[Path]:
         """
         Get a list of files in the specified folders with optional extensions.
 
@@ -11,6 +11,7 @@ class FolderScanner:
             folders: A single folder path as a `Path` object or a string, or a list of folder paths.
             extensions: Optional. A single extension or a list of extensions. If provided, only files
                 with matching extensions will be included.
+            recursive: Wether subfolders are also scanned in a recursive fashion.
 
         Returns:
             A list of `Path` objects representing the files.
@@ -27,6 +28,14 @@ class FolderScanner:
         """
         if isinstance(folders, (str, Path)):
             folders = [folders]  # Convert single folder path to list
+
+        # TODO: refactor: too much duplicate code
+        # scan for subfolders
+        if recursive:
+            subfolders = []
+            for folder in folders:
+                subfolders.extend([child for child in folder.glob('**/') if child.is_dir()])
+            folders = subfolders
 
         if extensions is None:
             files = []
