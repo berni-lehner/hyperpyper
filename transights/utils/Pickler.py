@@ -1,4 +1,5 @@
 import pickle
+from pathlib import Path
 
 class Pickler:
     """
@@ -20,6 +21,10 @@ class Pickler:
         Returns:
         None
         """
+        resultpath = Path(filename).parents[0]
+        if not resultpath.exists():
+            resultpath.mkdir()
+
         with open(filename, 'wb') as pickle_file:
             pickle.dump(data, pickle_file)
 
