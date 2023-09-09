@@ -117,8 +117,14 @@ class DataLoaderAggregator:
             for batch in self.data_loader:
                 mini_batches.append(batch)
 
+            # TODO: should we set collate_fn in the data_loader instead?
             # Turn the list of mini batches into a full batch
-            self._full_batch = self.collate_fn(mini_batches)
+            if isinstance(self.data_loader.dataset, GenericDataset):
+                # GenericDataset has a list of dict and needs to be treated accordingly
+                self._full_batch = self.collate_fn(mini_batches)
+            else:
+                self._full_batch = self.data_loader.collate_fn(mini_batches)
+          
 
         return self._full_batch        
 
