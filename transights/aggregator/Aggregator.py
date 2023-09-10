@@ -161,7 +161,7 @@ class DataAggregator(DataLoaderAggregator):
         batch_size (int, optional): Batch size for DataLoader. Default: 8.
         """
         data_set = GenericDataset(files, transforms)
-        data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=False)
+        data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=False, drop_last=True)
         super().__init__(data_loader)
 
 
@@ -188,6 +188,6 @@ class DataSetAggregator(DataLoaderAggregator):
         data_set (torch.utils.data.Dataset): The input dataset.
         batch_size (int, optional): Batch size for DataLoader. Default: 8.
         """
-        data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=False)
+        data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=False, drop_last=True)
         super().__init__(data_loader)
             
