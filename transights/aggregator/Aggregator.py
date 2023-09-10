@@ -123,6 +123,12 @@ class DataLoaderAggregator:
                 # GenericDataset has a list of dict and needs to be treated accordingly
                 self._full_batch = self.collate_fn(mini_batches)
             else:
+                # If we have a tuple per datapoint (X,y), then we need to do some flattening
+                # Otherwise, in case the last mini batch has a different size than the others,
+                # the default collate_fn() will not work
+                if len(mini_batches[0]) == 2:
+                    flattenend_batches = [(item[0],item[1]) for item in mini_batches]
+
                 self._full_batch = self.data_loader.collate_fn(mini_batches)
           
 
