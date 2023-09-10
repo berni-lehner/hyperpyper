@@ -129,7 +129,7 @@ class DataLoaderAggregator:
                 if len(mini_batches[0]) == 2:
                     flattenend_batches = [(item[0],item[1]) for item in mini_batches]
 
-                self._full_batch = self.data_loader.collate_fn(mini_batches)
+                self._full_batch = self.data_loader.collate_fn(flattenend_batches)
           
 
         return self._full_batch        
