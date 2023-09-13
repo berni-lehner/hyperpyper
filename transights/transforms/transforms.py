@@ -182,7 +182,33 @@ class FileToPIL:
     def __repr__(self):
         return self.__class__.__name__ + '()'
     
-    
+
+class DummyPIL:
+    def __init__(self, dummy=None):
+        self.dummy = dummy
+
+        if self.dummy is None:
+            array = np.arange(0, 1024, 1, np.uint8)
+            array = np.reshape(array, (32, 32))
+            self.dummy = Image.fromarray(array)
+
+    #@log_full
+    def __call__(self, file):
+        """
+        Create and return a dummy PIL image.
+
+
+        Returns:
+            A PIL image.
+
+        """            
+        return self.dummy
+ 
+
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
+
+
 class FlattenTensor:
     def __call__(self, tensor):
         return tensor.view(-1)
