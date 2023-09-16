@@ -31,12 +31,14 @@ class EmbeddingPlotter:
             if self.file_list is None:
                 return self._plot_2d()
             else:
-                return self._plot_2d_thumb()
+                #return self._plot_2d_thumb()
+                return self._plot_thumb(self._plot_2d)
         elif self.data.shape[1] == 3:
             if self.file_list is None:
                 return self._plot_3d()
             else:
-                return self._plot_3d_thumb()
+                #return self._plot_3d_thumb()
+                return self._plot_thumb(self._plot_3d)
         else:
             raise ValueError("Data dimension should be 2 or 3 for scatterplot.")
 
@@ -103,7 +105,7 @@ class EmbeddingPlotter:
         return fig
 
 
-    def _plot_2d_thumb(self):
+    def _plot_thumb(self, f):
         def update(trace, points, state):
             if not points.point_inds:
                 return
@@ -112,7 +114,7 @@ class EmbeddingPlotter:
             fname = trace['hovertext'][ind]
             img.value = self.load_image(Path(fname))
 
-        fig = self._plot_2d()
+        fig = f()
 
         img = widgets.Image(format='png', width=128)
         # TODO: initialize with dummy ; why is this not working?
@@ -134,36 +136,3 @@ class EmbeddingPlotter:
         )
 
         return widgets.Box([fig, widgets.VBox([widgets.Label(), img, widgets.Label()])], layout=layout)
-
-
-    def _plot_3d_thumb(self):
-        def update(trace, points, state):
-            if not points.point_inds:
-                return
-            
-            ind = points.point_inds[0]
-            fname = trace['hovertext'][ind]
-            img.value = self.load_image(Path(fname))
-
-        fig = self._plot_3d()
-
-        img = widgets.Image(format='png', width=128)
-        # TODO: initialize with dummy ; why is this not working?
-        #dummy = Image.new('RGBA', size=(32, 32), color=(128, 128, 128))
-        #img.value = memoryview(np.array(dummy))
-        #img.value = self.load_image(self.file_list[0])
-        
-        fig = go.FigureWidget(fig)
-
-        # Register callback for all plots (each color is a plot of its own)
-        for f in fig.data:
-            f.on_hover(update)
-
-        layout = widgets.Layout(
-            width='100%',
-            height='',
-            flex_flow='row',
-            display='flex'
-        )
-
-        return widgets.Box([fig, widgets.VBox([widgets.Label(), img, widgets.Label()])], layout=layout)        
