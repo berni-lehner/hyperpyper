@@ -33,28 +33,24 @@ class EmbeddingPlotter:
             else:
                 return self._plot_2d_thumb()
         elif self.data.shape[1] == 3:
-            return self._plot_3d()
+            if self.file_list is None:
+                return self._plot_3d()
+            else:
+                return self._plot_3d_thumb()
         else:
             raise ValueError("Data dimension should be 2 or 3 for scatterplot.")
 
-    def _plot_2d(self):
-        fig = px.scatter(x=self.data[:, 0],
-                        y=self.data[:, 1],
-                        color=self.color,
-                        hover_name=self.hover_name)
 
-        # TODO: make default look-and-feel
+    def _update_2d_lookandfeel(self, fig):
+        fig.update_layout(width=self.width, height=self.height)
         fig.update_traces(marker=dict(size=5, line=dict(color='black', width=0.5)),
                             selector=dict(mode='markers'))
-        fig.update_layout(width=self.width, height=self.height)
         fig.update_layout(legend= {'itemsizing': 'constant'})
 
         return fig
 
 
-    def _plot_3d(self):
-        fig = px.scatter_3d(x=self.data[:, 0], y=self.data[:, 1], z=self.data[:, 2], color=self.color, hover_name=self.hover_name)
-
+    def _update_3d_lookandfeel(self, fig):
         # update look and feel...
         fig.update_layout(width=self.width, height=self.height)
         fig.update_layout(legend= {'itemsizing': 'constant'})
@@ -89,6 +85,24 @@ class EmbeddingPlotter:
         return fig
 
 
+    def _plot_2d(self):
+        fig = px.scatter(x=self.data[:, 0],
+                        y=self.data[:, 1],
+                        color=self.color,
+                        hover_name=self.hover_name)
+
+        fig = self._update_2d_lookandfeel(fig)
+
+        return fig
+
+
+    def _plot_3d(self):
+        fig = px.scatter_3d(x=self.data[:, 0], y=self.data[:, 1], z=self.data[:, 2], color=self.color, hover_name=self.hover_name)
+        fig = self._update_3d_lookandfeel(fig)
+
+        return fig
+
+
     def _plot_2d_thumb(self):
         def update(trace, points, state):
             if not points.point_inds:
@@ -98,16 +112,7 @@ class EmbeddingPlotter:
             fname = trace['hovertext'][ind]
             img.value = self.load_image(Path(fname))
 
-        fig = px.scatter(x=self.data[:, 0],
-                        y=self.data[:, 1],
-                        color=self.color,
-                        hover_name=self.hover_name)
-
-        # TODO: make default look-and-feel
-        fig.update_traces(marker=dict(size=5, line=dict(color='black', width=0.5)))
-        fig.update_layout(width=self.width, height=self.height)
-        fig.update_layout(legend= {'itemsizing': 'constant'})
-
+        fig = self._plot_2d()
 
         img = widgets.Image(format='png', width=128)
         # TODO: initialize with dummy ; why is this not working?
@@ -129,3 +134,36 @@ class EmbeddingPlotter:
         )
 
         return widgets.Box([fig, widgets.VBox([widgets.Label(), img, widgets.Label()])], layout=layout)
+
+
+    def _plot_3d_thumb(self):
+        def update(trace, points, state):
+            if not points.point_inds:
+                return
+            
+            ind = points.point_inds[0]
+            fname = trace['hovertext'][ind]
+            img.value = self.load_image(Path(fname))
+
+        fig = self._plot_3d()
+
+        img = widgets.Image(format='png', width=128)
+        # TODO: initialize with dummy ; why is this not working?
+        #dummy = Image.new('RGBA', size=(32, 32), color=(128, 128, 128))
+        #img.value = memoryview(np.array(dummy))
+        #img.value = self.load_image(self.file_list[0])
+        
+        fig = go.FigureWidget(fig)
+
+        # Register callback for all plots (each color is a plot of its own)
+        for f in fig.data:
+            f.on_hover(update)
+
+        layout = widgets.Layout(
+            width='100%',
+            height='',
+            flex_flow='row',
+            display='flex'
+        )
+
+        return widgets.Box([fig, widgets.VBox([widgets.Label(), img, widgets.Label()])], layout=layout)        
