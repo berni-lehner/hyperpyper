@@ -158,7 +158,7 @@ class DataAggregator(DataLoaderAggregator):
     transform(): Aggregates mini-batches and returns the full batch.
     """
 
-    def __init__(self, files, transforms, batch_size=8):
+    def __init__(self, files, transforms, batch_size=8, num_workers=0):
         """
         Initialize the DataAggregator.
 
@@ -168,7 +168,7 @@ class DataAggregator(DataLoaderAggregator):
         batch_size (int, optional): Batch size for DataLoader. Default: 8.
         """
         data_set = GenericDataset(files, transforms)
-        data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=False)
+        data_loader = DataLoader(data_set, batch_size=batch_size, num_workers=num_workers, shuffle=False)
         super().__init__(data_loader)
 
 
