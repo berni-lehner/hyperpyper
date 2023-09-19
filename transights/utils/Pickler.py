@@ -21,9 +21,9 @@ class Pickler:
         Returns:
         None
         """
-        resultpath = Path(filename).parents[0]
+        resultpath = Path(filename).parent
         if not resultpath.exists():
-            resultpath.mkdir()
+            resultpath.mkdir(parents=True)
 
         with open(filename, 'wb') as pickle_file:
             pickle.dump(data, pickle_file)
