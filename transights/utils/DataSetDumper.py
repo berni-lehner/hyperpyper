@@ -27,38 +27,40 @@ class DataSetDumper():
 
 
 
-    def dump(self):
+    def dump(self, targets=[]):
         class_labels = []
 
-        # Get target list
-        if hasattr(self.dataset, 'targets'):
-            # Determine unique targets
-            ctr = Counter(self.dataset.targets)
-            targets = ctr.keys()
-            print(targets)
-        else: # Iterate the dataset and figure out the targets
-            raise ValueError("Invalid input type. DataSet needs to be from torchvision with attribute 'targets'.")
-            assert False, "Invalid input type. DataSet needs to be from torchvision with attribute 'targets'."
-            # TODO: test and activate
-            org_transform = self.dataset.transform
-            # Use a transform pipeline with dummy data to quickly load the targets
-            dummy_transform = Compose(
-                [
-                    DummyPIL(),
-                    ToTensor(),
-                ]
-            )
-            dataset.transform = dummy_transform
-            agg = DataSetAggregator(self.dataset, batch_size=1)
-            dummy_result = agg.transform()
+        # Check if targets are given
+        if not len(targets):
+            # Get target list
+            if hasattr(self.dataset, 'targets'):
+                # Determine unique targets
+                ctr = Counter(self.dataset.targets)
+                targets = ctr.keys()
+                print(targets)
+            else: # Iterate the dataset and figure out the targets
+                raise ValueError("Invalid input type. DataSet needs to be from torchvision with attribute 'targets'.")
+                assert False, "Invalid input type. DataSet needs to be from torchvision with attribute 'targets'."
+                # TODO: test and activate
+                org_transform = self.dataset.transform
+                # Use a transform pipeline with dummy data to quickly load the targets
+                dummy_transform = Compose(
+                    [
+                        DummyPIL(),
+                        ToTensor(),
+                    ]
+                )
+                dataset.transform = dummy_transform
+                agg = DataSetAggregator(self.dataset, batch_size=1)
+                dummy_result = agg.transform()
 
-            # Determine unique targets
-            ctr = Counter(dummy_result[1].numpy())
-            targets = ctr.keys()
-            print(targets)
+                # Determine unique targets
+                ctr = Counter(dummy_result[1].numpy())
+                targets = ctr.keys()
+                print(targets)
 
-            # Set the original transform again
-            self.dataset.transform = org_transform
+                # Set the original transform again
+                self.dataset.transform = org_transform
 
         # Create subfolders for each class label
         for t in targets:
