@@ -168,6 +168,12 @@ class DataAggregator(DataLoaderAggregator):
         batch_size (int, optional): Batch size for DataLoader. Default: 8.
         """
         data_set = GenericDataset(files, transforms)
+
+        # TODO: investigate why num_workers is not working (maybe its just with PyTorch models?)
+        if num_workers > 0: 
+            raise ValueError("Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)")
+            assert False, "Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)"
+
         data_loader = DataLoader(data_set, batch_size=batch_size, num_workers=num_workers, shuffle=False)
         super().__init__(data_loader)
 
