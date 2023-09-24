@@ -8,6 +8,7 @@ import plotly.express as px
 
 import ipywidgets as widgets
 
+from scipy.stats import gaussian_kde
 
 
 class EmbeddingPlotter:
@@ -19,6 +20,27 @@ class EmbeddingPlotter:
         self.width = width
         self.height = height
 
+        # Color according to the density
+        if type(self.color) == str:
+            if self.color == 'kde':
+                self.color = self._estimate_density()
+            else:
+                raise ValueError("Unknown color mode. Supported modes currently are: 'kde'.")
+
+
+    def _estimate_density(self):
+        # estimate kde
+        kde = gaussian_kde(self.data.T)
+
+        # evaluate on data
+        density = kde.evaluate(self.data.T)
+        
+        return density
+
+    #todo:
+    #def get_scatterplot_fig():
+
+        
 
     def load_image(self, filename: str):
         with open(filename, "rb") as f:
@@ -31,13 +53,11 @@ class EmbeddingPlotter:
             if self.file_list is None:
                 return self._plot_2d()
             else:
-                #return self._plot_2d_thumb()
                 return self._plot_thumb(self._plot_2d)
         elif self.data.shape[1] == 3:
             if self.file_list is None:
                 return self._plot_3d()
             else:
-                #return self._plot_3d_thumb()
                 return self._plot_thumb(self._plot_3d)
         else:
             raise ValueError("Data dimension should be 2 or 3 for scatterplot.")
@@ -91,6 +111,7 @@ class EmbeddingPlotter:
         fig = px.scatter(x=self.data[:, 0],
                         y=self.data[:, 1],
                         color=self.color,
+                        #opacity=0.5,
                         hover_name=self.hover_name)
 
         fig = self._update_2d_lookandfeel(fig)
