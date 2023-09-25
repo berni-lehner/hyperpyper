@@ -12,13 +12,23 @@ from scipy.stats import gaussian_kde
 
 
 class EmbeddingPlotter:
-    def __init__(self, data, color=None, hover_name=None, file_list=None, width=800, height=600):
+    def __init__(self, data, color=None, hover_name=None, file_list=None, width=800, height=600, fix_axis=True, axis_margin=1.1):
         self.data = data
         self.color = color
         self.hover_name = hover_name
         self.file_list = file_list
         self.width = width
         self.height = height
+        self.fix_axis = fix_axis
+        self.axis_margin = axis_margin
+
+        self._fig = None
+        self._min_vals = []
+        self._max_vals = []
+
+        if fix_axis:
+            self._min_vals = np.min(data, axis=0)
+            self._max_vals = np.max(data, axis=0)
 
         # Color according to the density
         if type(self.color) == str:
@@ -63,20 +73,29 @@ class EmbeddingPlotter:
             raise ValueError("Data dimension should be 2 or 3 for scatterplot.")
 
 
-    def _update_2d_lookandfeel(self, fig):
-        fig.update_layout(width=self.width, height=self.height)
-        fig.update_traces(marker=dict(size=5, line=dict(color='black', width=0.5)),
+    def _update_2d_lookandfeel(self):
+        if self._fig is None:
+            raise ValueError("Figure needs to be created beforehand.")
+
+        self._fig.update_layout(width=self.width, height=self.height)
+        self._fig.update_traces(marker=dict(size=5, line=dict(color='black', width=0.5)),
                             selector=dict(mode='markers'))
-        fig.update_layout(legend= {'itemsizing': 'constant'})
+        self._fig.update_layout(legend= {'itemsizing': 'constant'})
 
-        return fig
+        if self.fix_axis:
+            self._fix_axis_2d()
+
+        return self._fig
 
 
-    def _update_3d_lookandfeel(self, fig):
+    def _update_3d_lookandfeel(self):
+        if self._fig is None:
+            raise ValueError("Figure needs to be created beforehand.")
+
         # update look and feel...
-        fig.update_layout(width=self.width, height=self.height)
-        fig.update_layout(legend= {'itemsizing': 'constant'})
-        fig.update_layout(title_text='Embedding',
+        self._fig.update_layout(width=self.width, height=self.height)
+        self._fig.update_layout(legend= {'itemsizing': 'constant'})
+        self._fig.update_layout(title_text='Embedding',
                         showlegend=True,
                         legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5),
                         scene_camera=dict(up=dict(x=0, y=0, z=1), 
@@ -102,28 +121,49 @@ class EmbeddingPlotter:
                                                 tickfont=dict(size=10),
                                                 )))
         # ...and marker size
-        fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
+        self._fig.update_traces(marker=dict(size=3, line=dict(color='black', width=0.1)))
 
-        return fig
+        if self.fix_axis:
+            self._fix_axis_3d()
+
+        return self._fig
+
+
+    def _fix_axis_2d(self):
+        if self._fig is None:
+            raise ValueError("Figure needs to be created before axis can be fixed.")
+
+        self._fig.update_xaxes(range=[self._min_vals[0]*self.axis_margin, self._max_vals[0]*self.axis_margin])
+        self._fig.update_yaxes(range=[self._min_vals[1]*self.axis_margin, self._max_vals[1]*self.axis_margin])
+
+
+    def _fix_axis_3d(self):
+        self._fix_axis_2d()
+        if self.data.shape[1] < 3:
+            raise ValueError("Data dimension needs to be 3 for fixing z-axis .")
+
+        self._fig.update_scenes(zaxis=dict(range=[self._min_vals[2]*self.axis_margin, self._max_vals[2]*self.axis_margin]))
 
 
     def _plot_2d(self):
-        fig = px.scatter(x=self.data[:, 0],
-                        y=self.data[:, 1],
-                        color=self.color,
-                        #opacity=0.5,
-                        hover_name=self.hover_name)
+        self._fig = px.scatter(x=self.data[:, 0],
+                         y=self.data[:, 1],
+                         color=self.color,
+                         hover_name=self.hover_name)
+        self._update_2d_lookandfeel()
 
-        fig = self._update_2d_lookandfeel(fig)
-
-        return fig
+        return self._fig
 
 
     def _plot_3d(self):
-        fig = px.scatter_3d(x=self.data[:, 0], y=self.data[:, 1], z=self.data[:, 2], color=self.color, hover_name=self.hover_name)
-        fig = self._update_3d_lookandfeel(fig)
+        self._fig = px.scatter_3d(x=self.data[:, 0],
+                            y=self.data[:, 1],
+                            z=self.data[:, 2],
+                            color=self.color,
+                            hover_name=self.hover_name)
+        self._update_3d_lookandfeel()
 
-        return fig
+        return self._fig
 
 
     def _plot_thumb(self, f):
@@ -135,6 +175,7 @@ class EmbeddingPlotter:
             fname = trace['hovertext'][ind]
             img.value = self.load_image(Path(fname))
 
+        # create basic plot
         fig = f()
 
         img = widgets.Image(format='png', width=128)
