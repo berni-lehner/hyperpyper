@@ -394,6 +394,33 @@ class PyTorchOutput:
         return self.__class__.__name__ + '()'
     
     
+
+class ToArgMax:
+    """
+    """
+    def __init__(self, axis=None):
+        self.axis = axis
+
+    def __call__(self, X):        
+        return X.argmax(self.axis).item()
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__}(axis={self.axis})"
+
+
+class ToLabel:
+    """
+    """
+    def __init__(self, labels=None):
+        self.labels = labels
+
+    def __call__(self, X):        
+        return self.labels[X]
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__}(labels={self.labels})"
+
+
 class DebugTransform:
     """
     A utility class for debugging transformations by printing input arguments and their characteristics.
