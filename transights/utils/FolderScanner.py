@@ -3,7 +3,7 @@ from typing import Union, List, Optional
 
 class FolderScanner:
     @staticmethod
-    def get_files(folders: Union[Path, str, List[Union[Path, str]]], extensions: Optional[Union[str, List[str]]]=None, recursive=False, relative_path: str='') -> List[Path]:
+    def get_files(folders: Union[Path, str, List[Union[Path, str]]], extensions: Optional[Union[str, List[str]]]=None, recursive=False, relative_to: str='') -> List[Path]:
         """
         Get a list of files in the specified folders with optional extensions.
 
@@ -56,8 +56,8 @@ class FolderScanner:
                         files.append(file_path)
 
         # TODO: support list that corresponds to folders parameter
-        if relative_path:
-            files = [Path(p).relative_to(relative_path) for p in files]
+        if relative_to:
+            files = [Path(p).relative_to(relative_to) for p in files]
 
         return files
 
