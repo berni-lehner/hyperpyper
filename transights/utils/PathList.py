@@ -18,6 +18,10 @@ class PathList:
             self.paths = [Path(path) if isinstance(path, str) else path for path in paths]
 
 
+    def __add__(self, other):
+        return self.paths + other.paths
+
+
     def __truediv__(self, other):
         """
         Concatenate paths in the PathList with another path.
@@ -76,6 +80,10 @@ class PathList:
             str: String representation of the PathList object.
         """
         return f'PathList({self.paths})'
+
+
+    def __len__(self):
+        return len(self.paths)
 
 
     def __getitem__(self, index):
