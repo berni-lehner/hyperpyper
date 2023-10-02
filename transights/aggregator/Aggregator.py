@@ -158,7 +158,7 @@ class DataAggregator(DataLoaderAggregator):
     transform(): Aggregates mini-batches and returns the full batch.
     """
 
-    def __init__(self, files, transforms, batch_size=8, num_workers=0):
+    def __init__(self, files, transforms, root=None, batch_size=8, num_workers=0):
         """
         Initialize the DataAggregator.
 
@@ -167,7 +167,7 @@ class DataAggregator(DataLoaderAggregator):
         transforms (callable): A function/transform to apply to the data.
         batch_size (int, optional): Batch size for DataLoader. Default: 8.
         """
-        data_set = GenericDataset(files, transforms)
+        data_set = GenericDataset(files=files, transforms=transforms, root=root)
 
         # TODO: investigate why num_workers is not working (maybe its just with PyTorch models?)
         if num_workers > 0: 
