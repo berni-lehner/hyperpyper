@@ -15,8 +15,18 @@ class EmbeddingPlotter:
     def __init__(self, data, color=None, hover_name=None, file_list=None, width=800, height=600, fix_axis=True, axis_margin=1.1):
         self.data = data
         self.color = color
-        self.hover_name = hover_name
         self.file_list = file_list
+
+        if file_list is not None:
+            # we use hover_name for files, which has to be a string representation, and not a pathlib.Path
+            self.hover_name = [str(f) for f in file_list]
+            if hover_name is not None:
+                raise ValueError("file_list and hover_name not supported at the same time.")
+        else:
+            self.hover_name = hover_name
+
+
+
         self.width = width
         self.height = height
         self.fix_axis = fix_axis
