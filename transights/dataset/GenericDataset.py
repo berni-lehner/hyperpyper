@@ -1,8 +1,10 @@
 import torch
 import numpy as np
+from pathlib import Path
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
+from ..utils.PathList import PathList
 
 
 class GenericDataset(Dataset):
@@ -16,16 +18,24 @@ class GenericDataset(Dataset):
     Returns:
     None
     """
-    def __init__(self, files, transforms=None):
+    def __init__(self, files, transforms=None, root=None):
         self.files = files
         self.transforms = transforms
+
+        # Add prefix to all files if necessary
+        if root is not None:
+            pl = PathList(files)
+            self.full_files = root / pl
+        else:
+            self.full_files = self.files
+
 
     def __len__(self):
         return len(self.files)
 
     
     def __getitem__(self, index):
-        item = self.files[index]
+        item = self.full_files[index]
         
         if self.transforms is not None:
             item = self.transforms(item)
