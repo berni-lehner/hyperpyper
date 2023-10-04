@@ -19,7 +19,20 @@ class PathList:
 
 
     def __add__(self, other):
-        return self.paths + other.paths
+        """
+        Concatenate two PathList objects.
+
+        Args:
+            other (PathList): Another PathList object to concatenate with.
+
+        Returns:
+            PathList: A new PathList object with concatenated paths.
+        """
+        if isinstance(other, PathList):
+            return PathList(self.paths + other.paths)
+        else:
+            raise TypeError(f"Unsupported type for concatenation: {type(other)}")
+
 
 
     def __truediv__(self, other):
@@ -37,7 +50,7 @@ class PathList:
         if isinstance(other, str) or isinstance(other, Path):
             new_pathlist.paths = [path / other for path in new_pathlist.paths]
         else:
-            raise TypeError("Unsupported type for path concatenation.")
+            raise TypeError(f"Unsupported type for path concatenation: {type(other)}")
 
         return new_pathlist
 
@@ -57,7 +70,7 @@ class PathList:
         if isinstance(other, str) or isinstance(other, Path):
             new_pathlist.paths = [other / path for path in new_pathlist.paths]
         else:
-            raise TypeError("Unsupported type for path concatenation.")
+            raise TypeError(f"Unsupported type for path concatenation: {type(other)}")
 
         return new_pathlist
 
@@ -112,7 +125,7 @@ class PathList:
         elif isinstance(path, Path):
             self.paths.append(path)
         else:
-            raise TypeError("Unsupported type for appending.")
+            raise TypeError(f"Unsupported type for path appending: {type(other)}")
 
 
     def find_replace(self, find, replace):
