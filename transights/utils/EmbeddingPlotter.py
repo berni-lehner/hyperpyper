@@ -33,6 +33,7 @@ class EmbeddingPlotter:
         self.axis_margin = axis_margin
 
         self._fig = None
+        self._box = None
         self._min_vals = []
         self._max_vals = []
 
@@ -46,6 +47,33 @@ class EmbeddingPlotter:
                 self.color = self._estimate_density()
             else:
                 raise ValueError("Unknown color mode. Supported modes currently are: 'kde'.")
+
+
+    def _get_fig(self):
+        if self._box is None:
+            if self._fig is None:
+                raise ValueError("Figure needs to be created beforehand.")
+            return self._fig
+        else:
+            return self._box.children[0]
+
+
+    def update_traces(self, name_pattern, update_params):
+        """
+        Update traces in a Plotly figure whose names match a specified pattern using wildcards.
+
+        Parameters:
+            name_pattern (str): The name pattern with wildcards (e.g., 'Scatter_*').
+            update_params (dict): The update parameters for the selected traces.
+
+        Returns:
+            plotly.graph_objects.Figure: The updated Plotly figure.
+        """
+        fig = self._get_fig()
+        for i, trace in enumerate(fig.data):
+            if name_pattern in trace.name:
+                for key, value in update_params.items():
+                    setattr(trace, key, value)
 
 
     def _estimate_density(self):
@@ -207,4 +235,6 @@ class EmbeddingPlotter:
             display='flex'
         )
 
-        return widgets.Box([fig, widgets.VBox([widgets.Label(), img, widgets.Label()])], layout=layout)
+        self._box = widgets.Box([fig, widgets.VBox([widgets.Label(), img, widgets.Label()])], layout=layout)
+
+        return self._box
