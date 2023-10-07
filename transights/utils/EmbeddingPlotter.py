@@ -58,6 +58,23 @@ class EmbeddingPlotter:
             return self._box.children[0]
 
 
+    def update_legend_order(self, order):
+        """
+        Example:
+            order = ['PLOT-3', 'PLOT-2', 'PLOT-1']
+            plotter.update_legend_order(order)
+
+        """
+        fig = self._get_fig()
+
+        new_data = []
+        for trace_name in order:
+            for trace in fig.data:
+                if trace.name == trace_name:
+                    new_data.append(trace)
+                        
+        fig.data = new_data        
+
     def update_traces(self, name_pattern, update_params):
         """
         Update traces in a Plotly figure whose names match a specified pattern using wildcards.
