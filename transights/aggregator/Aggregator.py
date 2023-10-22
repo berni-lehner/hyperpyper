@@ -134,7 +134,8 @@ class DataLoaderAggregator:
 
                 # reshape full batch
                 n_samples = self._full_batch[0].shape[0]*self._full_batch[0].shape[1]
-                X = self._full_batch[0].reshape(n_samples, -1)
+                #X = self._full_batch[0].reshape(n_samples, -1)
+                X = self._full_batch[0].view(-1)
                 y = self._full_batch[1].view(-1)
                 self._full_batch = (X, y)
           
@@ -147,7 +148,7 @@ class DataAggregator(DataLoaderAggregator):
     Aggregates data from a list of files using a GenericDataset and DataLoader.
 
     Args:
-    files (list): List of file paths or data items.
+    files (list): List of file paths.
     transforms (callable): A function/transform to apply to the data.
     batch_size (int, optional): Batch size for DataLoader. Default: 8.
 
@@ -157,7 +158,6 @@ class DataAggregator(DataLoaderAggregator):
     fit_transform(): Alias for transform().
     transform(): Aggregates mini-batches and returns the full batch.
     """
-
     def __init__(self, files, transforms, root=None, batch_size=8, num_workers=0):
         """
         Initialize the DataAggregator.
@@ -175,6 +175,7 @@ class DataAggregator(DataLoaderAggregator):
             assert False, "Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)"
 
         data_loader = DataLoader(data_set, batch_size=batch_size, num_workers=num_workers, shuffle=False)
+
         super().__init__(data_loader)
 
 

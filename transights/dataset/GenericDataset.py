@@ -19,15 +19,13 @@ class GenericDataset(Dataset):
     None
     """
     def __init__(self, files, transforms=None, root=None):
-        self.files = files
+        self.files = PathList(files)
+        self.full_files = self.files
         self.transforms = transforms
 
         # Add prefix to all files if necessary
         if root is not None:
-            pl = PathList(files)
-            self.full_files = root / pl
-        else:
-            self.full_files = self.files
+            self.full_files = root / self.files
 
 
     def __len__(self):
@@ -40,6 +38,6 @@ class GenericDataset(Dataset):
         if self.transforms is not None:
             item = self.transforms(item)
         
-        sample = {'item': item, 'file': [str(self.files[index])]}
+        sample = {'item': item, 'file': [str(self.files[index].as_posix())]}
 
         return sample
