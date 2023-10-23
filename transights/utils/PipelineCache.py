@@ -72,7 +72,7 @@ class PipelineCache:
             The fitted pipeline or the cached results.
         """
         hash_value = self._get_hash(X)
-        cache_file = self._get_cache_file(hash_value, prefix='fit_')
+        cache_file = self._get_cache_file(hash_value, prefix='fit')
 
         print(cache_file)
 
@@ -99,7 +99,7 @@ class PipelineCache:
             The transformed data or the cached results.
         """
         hash_value = self._get_hash(X)
-        cache_file = self._get_cache_file(hash_value, prefix='transform_')
+        cache_file = self._get_cache_file(hash_value, prefix='transform')
 
         if cache_file is not None:
             if Path(cache_file).exists():
@@ -109,6 +109,31 @@ class PipelineCache:
                 Pickler.save_data(results, cache_file)
         else:
             results = self.pipeline.transform(X)
+
+        return results
+
+
+    def fit_transform(self, X):
+        """
+        Fits the pipeline and transforms the input data using the pipeline and cache the results if necessary.
+
+        Parameters:
+            X: The input data for fitting the pipeline and transforming.
+
+        Returns:
+            The transformed data or the cached results.
+        """
+        hash_value = self._get_hash(X)
+        cache_file = self._get_cache_file(hash_value, prefix='fit_transform')
+
+        if cache_file is not None:
+            if Path(cache_file).exists():
+                results = Pickler.load_data(cache_file)
+            else:
+                results = self.pipeline.fit_transform(X)
+                Pickler.save_data(results, cache_file)
+        else:
+            results = self.pipeline.fit_transform(X)
 
         return results
 
@@ -124,7 +149,7 @@ class PipelineCache:
             The predicted values or the cached results.
         """
         hash_value = self._get_hash(X)
-        cache_file = self._get_cache_file(hash_value, prefix='predict_')
+        cache_file = self._get_cache_file(hash_value, prefix='predict')
 
         if cache_file is not None:
             if Path(cache_file).exists():
@@ -149,7 +174,7 @@ class PipelineCache:
             The class probabilities or the cached results.
         """
         hash_value = self._get_hash(X)
-        cache_file = self._get_cache_file(hash_value, prefix='predict_proba_')
+        cache_file = self._get_cache_file(hash_value, prefix='predict_proba')
 
         if cache_file is not None:
             if Path(cache_file).exists():
