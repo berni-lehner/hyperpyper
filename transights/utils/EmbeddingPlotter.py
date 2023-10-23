@@ -5,6 +5,7 @@ from PIL import Image
 import plotly.express as px
 import plotly.graph_objs as go
 import plotly.express as px
+import plotly.offline as pyo
 
 import ipywidgets as widgets
 
@@ -58,6 +59,14 @@ class EmbeddingPlotter:
             return self._box.children[0]
 
 
+    def to_html(self, file_name):
+        fig = self._get_fig()
+
+        # Save the plot as HTML file
+        pyo.plot(fig, filename=str(file_name))
+
+
+
     def update_legend_order(self, order):
         """
         Example:
@@ -87,6 +96,7 @@ class EmbeddingPlotter:
             plotly.graph_objects.Figure: The updated Plotly figure.
         """
         fig = self._get_fig()
+
         for i, trace in enumerate(fig.data):
             if name_pattern in trace.name:
                 for key, value in update_params.items():
@@ -101,11 +111,7 @@ class EmbeddingPlotter:
         density = kde.evaluate(self.data.T)
         
         return density
-
-    #todo:
-    #def get_scatterplot_fig():
-
-        
+    
 
     def load_image(self, filename: str):
         with open(filename, "rb") as f:
@@ -233,7 +239,10 @@ class EmbeddingPlotter:
         # create basic plot
         fig = f()
 
-        img = widgets.Image(format='png', width=128)
+        # Create a NumPy array representing an all-black image
+        #black_image = np.zeros((32, 32, 3), dtype=np.uint8)
+
+        img = widgets.Image(format='png', width=128)#, value=black_image)
         # TODO: initialize with dummy ; why is this not working?
         #dummy = Image.new('RGBA', size=(32, 32), color=(128, 128, 128))
         #img.value = memoryview(np.array(dummy))
