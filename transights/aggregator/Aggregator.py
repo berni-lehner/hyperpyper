@@ -132,9 +132,7 @@ class DataLoaderAggregator:
 
                 self._full_batch = self.data_loader.collate_fn(flattenend_batches)
 
-                # reshape full batch
-                n_samples = self._full_batch[0].shape[0]*self._full_batch[0].shape[1]
-                #X = self._full_batch[0].reshape(n_samples, -1)
+                # flatten full batch
                 X = self._full_batch[0].view(-1)
                 y = self._full_batch[1].view(-1)
                 self._full_batch = (X, y)
