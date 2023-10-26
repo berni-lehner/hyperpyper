@@ -50,6 +50,15 @@ class EmbeddingPlotter:
                 raise ValueError("Unknown color mode. Supported modes currently are: 'kde'.")
 
 
+    def _get_plot_handle(self):
+        handle = None
+        if self._box is not None:
+            handle = self._box.children[0]
+        if self._fig is not None:
+            handle = self._fig
+        return handle
+
+
     def _get_fig(self):
         if self._box is None:
             if self._fig is None:
@@ -62,6 +71,10 @@ class EmbeddingPlotter:
     def to_html(self, file_name):
         fig = self._get_fig()
 
+        resultpath = Path(file_name).parent
+        if not resultpath.exists():
+            resultpath.mkdir(parents=True)
+            
         # Save the plot as HTML file
         pyo.plot(fig, filename=str(file_name))
 
@@ -84,12 +97,13 @@ class EmbeddingPlotter:
                         
         fig.data = new_data        
 
+
     def update_traces(self, name_pattern, update_params):
         """
-        Update traces in a Plotly figure whose names match a specified pattern using wildcards.
+        Update traces in a Plotly figure whose names match a specified pattern.
 
         Parameters:
-            name_pattern (str): The name pattern with wildcards (e.g., 'Scatter_*').
+            name_pattern (str): The name pattern (e.g., 'label_').
             update_params (dict): The update parameters for the selected traces.
 
         Returns:
@@ -120,6 +134,11 @@ class EmbeddingPlotter:
 
 
     def plot(self):
+        # Take care if there is just a redraw to be done
+        handle = self._get_plot_handle()
+        if handle is not None:
+            return handle
+
         if self.data.shape[1] == 2:
             if self.file_list is None:
                 return self._plot_2d()
@@ -156,7 +175,7 @@ class EmbeddingPlotter:
         # update look and feel...
         self._fig.update_layout(width=self.width, height=self.height)
         self._fig.update_layout(legend= {'itemsizing': 'constant'})
-        self._fig.update_layout(title_text='Embedding',
+        self._fig.update_layout(title_text='',
                         showlegend=True,
                         legend=dict(orientation="h", yanchor="top", y=0, xanchor="center", x=0.5),
                         scene_camera=dict(up=dict(x=0, y=0, z=1), 
