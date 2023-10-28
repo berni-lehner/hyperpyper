@@ -62,7 +62,7 @@ class FolderScanner:
         return files
 
     @staticmethod
-    def get_image_files(folders: Union[Path, str, List[Union[Path, str]]]) -> List[Path]:
+    def get_image_files(folders: Union[Path, str, List[Union[Path, str]]],  recursive=False, relative_to: str='') -> List[Path]:
         """
         Get a list of image files (with default extensions) in the specified folders.
 
@@ -78,10 +78,10 @@ class FolderScanner:
 
         """
         extensions = ['.jpg', '.jpeg', '.png', '.gif']
-        return FolderScanner.get_files(folders, extensions)
+        return FolderScanner.get_files(folders, extensions, recursive=recursive, relative_to=relative_to)
 
     @staticmethod
-    def get_csv_files(folders: Union[Path, str, List[Union[Path, str]]]) -> List[Path]:
+    def get_csv_files(folders: Union[Path, str, List[Union[Path, str]]],  recursive=False, relative_to: str='') -> List[Path]:
         """
         Get a list of CSV files in the specified folders.
 
@@ -97,4 +97,4 @@ class FolderScanner:
 
         """
         extensions = ['.csv']
-        return FolderScanner.get_files(folders, extensions)
+        return FolderScanner.get_files(folders, extensions, recursive=recursive, relative_to=relative_to)
