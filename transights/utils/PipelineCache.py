@@ -55,9 +55,8 @@ class PipelineCache:
         Returns:
             Path: The full cache file path.
         """
-        filename = hash_value + ".pkl"
-        cache_file = self.cache_path / prefix / filename
-        return cache_file
+        filename = f"{hash_value}.pkl"
+        return self.cache_path / prefix / filename
 
 
     def fit(self, X, y=None):
@@ -76,15 +75,14 @@ class PipelineCache:
 
         print(cache_file)
 
-        if cache_file is not None:
-            if Path(cache_file).exists():
-                results = Pickler.load_data(cache_file)
-            else:
-                results = self.pipeline.fit(X, y)
-                Pickler.save_data(results, cache_file)
+        if cache_file is None:
+            results = self.pipeline.fit(X, y)
+
+        elif Path(cache_file).exists():
+            results = Pickler.load_data(cache_file)
         else:
             results = self.pipeline.fit(X, y)
-            
+            Pickler.save_data(results, cache_file)
         return results
 
 
@@ -101,15 +99,14 @@ class PipelineCache:
         hash_value = self._get_hash(X)
         cache_file = self._get_cache_file(hash_value, prefix='transform')
 
-        if cache_file is not None:
-            if Path(cache_file).exists():
-                results = Pickler.load_data(cache_file)
-            else:
-                results = self.pipeline.transform(X)
-                Pickler.save_data(results, cache_file)
-        else:
+        if cache_file is None:
             results = self.pipeline.transform(X)
 
+        elif Path(cache_file).exists():
+            results = Pickler.load_data(cache_file)
+        else:
+            results = self.pipeline.transform(X)
+            Pickler.save_data(results, cache_file)
         return results
 
 
@@ -126,15 +123,14 @@ class PipelineCache:
         hash_value = self._get_hash(X)
         cache_file = self._get_cache_file(hash_value, prefix='fit_transform')
 
-        if cache_file is not None:
-            if Path(cache_file).exists():
-                results = Pickler.load_data(cache_file)
-            else:
-                results = self.pipeline.fit_transform(X)
-                Pickler.save_data(results, cache_file)
-        else:
+        if cache_file is None:
             results = self.pipeline.fit_transform(X)
 
+        elif Path(cache_file).exists():
+            results = Pickler.load_data(cache_file)
+        else:
+            results = self.pipeline.fit_transform(X)
+            Pickler.save_data(results, cache_file)
         return results
 
 
@@ -151,15 +147,14 @@ class PipelineCache:
         hash_value = self._get_hash(X)
         cache_file = self._get_cache_file(hash_value, prefix='predict')
 
-        if cache_file is not None:
-            if Path(cache_file).exists():
-                results = Pickler.load_data(cache_file)
-            else:
-                results = self.pipeline.predict(X)
-                Pickler.save_data(results, cache_file)
-        else:
+        if cache_file is None:
             results = self.pipeline.predict(X)
 
+        elif Path(cache_file).exists():
+            results = Pickler.load_data(cache_file)
+        else:
+            results = self.pipeline.predict(X)
+            Pickler.save_data(results, cache_file)
         return results
 
 
@@ -176,13 +171,12 @@ class PipelineCache:
         hash_value = self._get_hash(X)
         cache_file = self._get_cache_file(hash_value, prefix='predict_proba')
 
-        if cache_file is not None:
-            if Path(cache_file).exists():
-                results = Pickler.load_data(cache_file)
-            else:
-                results = self.pipeline.predict_proba(X)
-                Pickler.save_data(results, cache_file)
-        else:
+        if cache_file is None:
             results = self.pipeline.predict_proba(X)
 
+        elif Path(cache_file).exists():
+            results = Pickler.load_data(cache_file)
+        else:
+            results = self.pipeline.predict_proba(X)
+            Pickler.save_data(results, cache_file)
         return results

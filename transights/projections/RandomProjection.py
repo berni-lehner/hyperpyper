@@ -54,10 +54,8 @@ class RandomProjection(BaseEstimator):
         if self.random_matrix is None:
             input_dim = X.shape[0]
             self.random_matrix = np.random.randn(self.output_dim, input_dim)
-            
-        result = self._transform_array(X)
-        
-        return result
+
+        return self._transform_array(X)
 
     def _transform_array(self, X):
         X = np.array(X)
@@ -69,4 +67,4 @@ class RandomProjection(BaseEstimator):
         return np.dot(X, self.random_matrix.T)
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'

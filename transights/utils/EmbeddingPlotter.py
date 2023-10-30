@@ -60,12 +60,11 @@ class EmbeddingPlotter:
 
 
     def _get_fig(self):
-        if self._box is None:
-            if self._fig is None:
-                raise ValueError("Figure needs to be created beforehand.")
-            return self._fig
-        else:
+        if self._box is not None:
             return self._box.children[0]
+        if self._fig is None:
+            raise ValueError("Figure needs to be created beforehand.")
+        return self._fig
 
 
     def to_html(self, file_name):
@@ -91,10 +90,7 @@ class EmbeddingPlotter:
 
         new_data = []
         for trace_name in order:
-            for trace in fig.data:
-                if trace.name == trace_name:
-                    new_data.append(trace)
-                        
+            new_data.extend(trace for trace in fig.data if trace.name == trace_name)
         fig.data = new_data        
 
 
@@ -111,7 +107,7 @@ class EmbeddingPlotter:
         """
         fig = self._get_fig()
 
-        for i, trace in enumerate(fig.data):
+        for trace in fig.data:
             if name_pattern in trace.name:
                 for key, value in update_params.items():
                     setattr(trace, key, value)
@@ -121,10 +117,7 @@ class EmbeddingPlotter:
         # estimate kde
         kde = gaussian_kde(self.data.T)
 
-        # evaluate on data
-        density = kde.evaluate(self.data.T)
-        
-        return density
+        return kde.evaluate(self.data.T)
     
 
     def load_image(self, filename: str):
