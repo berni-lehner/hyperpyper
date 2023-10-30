@@ -15,17 +15,15 @@ class TensorToNumpy(object):
         return X.numpy()
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
 
 
 class PILToNumpy:
     def __call__(self, img):
-        result = np.array(img)
-            
-        return result
+        return np.array(img)
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
 
 
 
@@ -73,7 +71,7 @@ class FlattenArray:
             return np.concatenate([channel.flatten() for channel in img], axis=0)
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
     
 #TODO: test
 class FlattenList:
@@ -88,7 +86,7 @@ class FlattenList:
         return np.array(flattened_list)
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
 
     
 class ReshapeArray:
@@ -96,22 +94,18 @@ class ReshapeArray:
         self.shape = shape
 
     def __call__(self, X):
-        X_reshaped = np.reshape(X, self.shape)
-        
-        return X_reshaped
+        return np.reshape(X, self.shape)
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
 
     
 class NumpyToPIL:
     def __call__(self, X):
-        img = Image.fromarray(X)
-        
-        return img
+        return Image.fromarray(X)
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
     
     
 class ProjectTransform:
@@ -143,12 +137,10 @@ class ProjectTransform:
         self.projector = projector
 
     def __call__(self, X):
-        X_trans = self.projector.transform(X)
-        
-        return X_trans
+        return self.projector.transform(X)
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
     
     
 class FileToPIL:
@@ -180,7 +172,7 @@ class FileToPIL:
  
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
     
 
 class DummyPIL:
@@ -206,7 +198,7 @@ class DummyPIL:
  
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
 
 
 class FlattenTensor:
@@ -214,7 +206,7 @@ class FlattenTensor:
         return tensor.view(-1)
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
     
     
 class ToDevice:
@@ -230,7 +222,7 @@ class ToDevice:
 
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
     
     
 import torch
@@ -336,7 +328,7 @@ class PyTorchEmbedding:
         return embeddings
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
 
 
 class PyTorchOutput:
@@ -391,7 +383,7 @@ class PyTorchOutput:
 
     
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
     
     
 
@@ -525,13 +517,13 @@ class CachingTransform:
         cache_file = self._get_cache_filename(data)
         if os.path.exists(cache_file):
             if self.verbose:
-                print(f"Loading cached result ...")
+                print("Loading cached result ...")
             # Load the cached result if it exists
             with open(cache_file, 'rb') as f:
                 result = pickle.load(f)
         else:
             if self.verbose:
-                print(f"Caching result ...")
+                print("Caching result ...")
 
             # Compute the result using the transform and store it in cache
             result = self.transform(data)

@@ -34,10 +34,8 @@ class GenericDataset(Dataset):
     
     def __getitem__(self, index):
         item = self.full_files[index]
-        
+
         if self.transforms is not None:
             item = self.transforms(item)
-        
-        sample = {'item': item, 'file': [str(self.files[index].as_posix())]}
 
-        return sample
+        return {'item': item, 'file': [str(self.files[index].as_posix())]}

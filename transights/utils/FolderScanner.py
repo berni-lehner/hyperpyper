@@ -37,24 +37,27 @@ class FolderScanner:
                 subfolders.extend([child for child in folder.glob('**/') if child.is_dir()])
             folders = subfolders
 
+        files = []
         if extensions is None:
-            files = []
             for folder in folders:
                 folder_path = Path(folder)
-                for file_path in folder_path.iterdir():
-                    if file_path.is_file():
-                        files.append(file_path)
+                files.extend(
+                    file_path
+                    for file_path in folder_path.iterdir()
+                    if file_path.is_file()
+                )
         else:
             if isinstance(extensions, str):
                 extensions = [extensions]  # Convert single extension to list
 
-            files = []
             for folder in folders:
                 folder_path = Path(folder)
-                for file_path in folder_path.iterdir():
-                    if file_path.is_file() and file_path.suffix.lower() in extensions:
-                        files.append(file_path)
-
+                files.extend(
+                    file_path
+                    for file_path in folder_path.iterdir()
+                    if file_path.is_file()
+                    and file_path.suffix.lower() in extensions
+                )
         # TODO: support list that corresponds to folders parameter
         if relative_to:
             files = [Path(p).relative_to(relative_to) for p in files]

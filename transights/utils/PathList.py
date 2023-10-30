@@ -47,7 +47,7 @@ class PathList:
         """
         new_pathlist = PathList(self.paths)
 
-        if isinstance(other, str) or isinstance(other, Path):
+        if isinstance(other, (str, Path)):
             new_pathlist.paths = [path / other for path in new_pathlist.paths]
         else:
             raise TypeError(f"Unsupported type for path concatenation: {type(other)}")
@@ -67,7 +67,7 @@ class PathList:
         """
         new_pathlist = PathList(self.paths)
 
-        if isinstance(other, str) or isinstance(other, Path):
+        if isinstance(other, (str, Path)):
             new_pathlist.paths = [other / path for path in new_pathlist.paths]
         else:
             raise TypeError(f"Unsupported type for path concatenation: {type(other)}")

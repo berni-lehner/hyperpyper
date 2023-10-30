@@ -96,27 +96,21 @@ class DataLoaderAggregator:
         Returns:
         dict: The aggregated full batch.
         """
-        if cache_file is not None:
-            if Path(cache_file).exists():
-                self._full_batch = Pickler.load_data(cache_file)
-            else:
-                self._full_batch = self.__transform()
-                Pickler.save_data(self._full_batch, cache_file)
+        if cache_file is None:
+            self._full_batch = self.__transform()
+
+        elif Path(cache_file).exists():
+            self._full_batch = Pickler.load_data(cache_file)
         else:
             self._full_batch = self.__transform()
-            
+            Pickler.save_data(self._full_batch, cache_file)
         return self._full_batch        
  
             
     def __transform(self):
         # Avoid unnecessary transforms
         if self._full_batch is None:
-            mini_batches = []
-
-            # Iterate over the DataLoader and aggregate all mini batches
-            for batch in self.data_loader:
-                mini_batches.append(batch)
-
+            mini_batches = list(self.data_loader)
             # TODO: should we set collate_fn in the data_loader instead?
             # Turn the list of mini batches into a full batch
             if isinstance(self.data_loader.dataset, GenericDataset):
@@ -136,7 +130,7 @@ class DataLoaderAggregator:
                 X = self._full_batch[0].view(-1)
                 y = self._full_batch[1].view(-1)
                 self._full_batch = (X, y)
-          
+
 
         return self._full_batch   
 
@@ -170,8 +164,6 @@ class DataAggregator(DataLoaderAggregator):
         # TODO: investigate why num_workers is not working (maybe its just with PyTorch models?)
         if num_workers > 0: 
             raise ValueError("Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)")
-            assert False, "Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)"
-
         data_loader = DataLoader(data_set, batch_size=batch_size, num_workers=num_workers, shuffle=False)
 
         super().__init__(data_loader)
