@@ -218,10 +218,11 @@ class EmbeddingPlotter:
 
 
     def _fix_axis_3d(self):
-        self._fix_axis_2d()
         if self.data.shape[1] < 3:
             raise ValueError("Data dimension needs to be 3 for fixing z-axis .")
 
+        self._fig.update_scenes(xaxis=dict(range=[self._min_vals[0]*self.axis_margin, self._max_vals[0]*self.axis_margin]))
+        self._fig.update_scenes(yaxis=dict(range=[self._min_vals[1]*self.axis_margin, self._max_vals[1]*self.axis_margin]))
         self._fig.update_scenes(zaxis=dict(range=[self._min_vals[2]*self.axis_margin, self._max_vals[2]*self.axis_margin]))
 
 
