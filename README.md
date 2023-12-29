@@ -26,12 +26,12 @@ todo
 The notebooks contain ...
 
 - **Utility classes**
-    - [DataSetDumper](https://github.com/berni-lehner/.ipynb)
-    - [EmbeddingPlotter](https://github.com/berni-lehner/.ipynb)
-    - [FolderScanner](https://github.com/berni-lehner/.ipynb)
-    - [PathList](https://github.com/berni-lehner/.ipynb)
-    - [Pickler](https://github.com/berni-lehner/.ipynb)
-    - [PipelineCache](https://github.com/berni-lehner/.ipynb)
+    - [DataSetDumper](https://github.com/berni-lehner/DataSetDumper_demo.ipynb)
+    - [EmbeddingPlotter](https://github.com/berni-lehner/EmbeddingPlotter_demo.ipynb)
+    - [FolderScanner](https://github.com/berni-lehner/FolderScanner_demo.ipynb)
+    - [PathList](https://github.com/berni-lehner/PathList_demo.ipynb)
+    - [Pickler](https://github.com/berni-lehner/Pickler_demo.ipynb)
+    - [PipelineCache](https://github.com/berni-lehner/CIFAR10_umap_caching_demo.ipynb)
 
 - **Pytorch demos**
 
