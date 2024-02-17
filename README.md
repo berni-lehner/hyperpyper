@@ -1,10 +1,15 @@
 # hyperpyper
 [Bernhard Lehner](https://www.researchgate.net/profile/Bernhard_Lehner)
 
-Insights with Transforms: Automatic collation of full batch output from transformation pipelines.
+Insights with Interventions via Transforms:
+- Automatic collation of full batch output from transformation pipelines.
+- Tools to load, plot transformation pipeline outputs.
+- Specific transforms for interventions such as single pixel modifications, simulating compression artifacts, dim. reduction.
+- Wrapper for logging/debugging transformation pipelines.
+- Demos and Tutorials
 
 ## Prerequisites
-Tested with Python 3.9 and 3.10 on Windows/Linux.
+Tested with Python 3.8, 3.9, and 3.10 on Windows/Linux.
 
 ## Installation
 pip install git+https://github.com/berni-lehner/hyperpyper.git
@@ -12,6 +17,8 @@ pip install git+https://github.com/berni-lehner/hyperpyper.git
 
 ## Abstract
 todo
+
+![alt text](https://github.com/berni-lehner/hyperpyper/blob/main/embedding_plotter.png?raw=true)
 
 ## Table of Contents
 1. [Introduction](#introduction)
