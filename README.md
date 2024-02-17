@@ -18,7 +18,7 @@ pip install git+https://github.com/berni-lehner/hyperpyper.git
 ## Abstract
 todo
 
-![alt text](https://github.com/berni-lehner/hyperpyper/blob/main/embedding_plotter.png?raw=true)
+![alt text](https://github.com/berni-lehner/hyperpyper/blob/main/meta/embedding_plotter.png?raw=true)
 
 ## Table of Contents
 1. [Introduction](#introduction)
