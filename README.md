@@ -33,8 +33,10 @@ todo
 The notebooks contain ...
 
 - **Utility classes**
-    - [DataSetDumper](https://github.com/berni-lehner/hyperpyper/blob/main/DataSetDumper_demo.ipynb)
     - [EmbeddingPlotter](https://github.com/berni-lehner/hyperpyper/blob/main/EmbeddingPlotter_demo.ipynb)
+    - [HistogramPlotter](https://github.com/berni-lehner/hyperpyper/blob/main/HistogramPlotter_demo.ipynb)
+    - [MultiFigurePlotter](https://github.com/berni-lehner/hyperpyper/blob/main/MultiFigurePlotter_demo.ipynb)    
+    - [DataSetDumper](https://github.com/berni-lehner/hyperpyper/blob/main/DataSetDumper_demo.ipynb)
     - [FolderScanner](https://github.com/berni-lehner/hyperpyper/blob/main/FolderScanner_demo.ipynb)
     - [PathList](https://github.com/berni-lehner/hyperpyper/blob/main/PathList_demo.ipynb)
     - [Pickler](https://github.com/berni-lehner/hyperpyper/blob/main/Pickler_demo.ipynb)
