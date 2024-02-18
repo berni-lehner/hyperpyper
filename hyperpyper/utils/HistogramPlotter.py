@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.colors import Colormap
-from typing import Union, List
+from typing import List, Tuple, Union
 
 class HistogramPlotter:
     def __init__(self,
@@ -11,17 +11,19 @@ class HistogramPlotter:
                  bins: Union[int, str, List[float]] = 'auto',
                  density: bool = False,
                  colormap: Union[str, Colormap, None] = None,
-                 colors: Union[None, List[str]] = None):
+                 colors: Union[None, List[str]] = None,
+                 figsize: Union[Tuple[float, float], None] = None):
         """
         Initialize the HistogramPlotter object.
 
         Parameters:
-        - X (Union[np.ndarray, List[np.ndarray]]): Single or list of 1D measurements to be turned into histograms.
-        - X_labels (Union[None, str, List[str]], optional): Label or list of labels corresponding to each dataset in X.
-        - bins (Union[int, str, List[float]], optional): Specification of histogram bins. Default is 'auto'.
-        - density (bool, optional): If True, the histogram represents a probability density. Default is False.
-        - colormap (Union[str, Colormap, None], optional): Name of the colormap or a colormap object itself.
-        - colors (Union[None, List[str]], optional): List of colors corresponding to each dataset in X.
+            X (Union[np.ndarray, List[np.ndarray]]): Single or list of 1D measurements to be turned into histograms.
+            X_labels (Union[None, str, List[str]], optional): Label or list of labels corresponding to each dataset in X.
+            bins (Union[int, str, List[float]], optional): Specification of histogram bins. Default is 'auto'.
+            density (bool, optional): If True, the histogram represents a probability density. Default is False.
+            colormap (Union[str, Colormap, None], optional): Name of the colormap or a colormap object itself.
+            colors (Union[None, List[str]], optional): List of colors corresponding to each dataset in X.
+            figsize (tuple): The size of the entire figure in inches (width, height).
         """
         self.X = X
         self.X_labels = X_labels
@@ -30,6 +32,7 @@ class HistogramPlotter:
         self.colormap = colormap
         self.colors = colors
         self.color_iter = None
+        self.figsize: Union[Tuple[float, float], None] = figsize
 
         if (self.colormap is not None) and (self.colors is not None):
             raise ValueError("Both 'colormap' and 'colors' parameters cannot be provided simultaneously. "
@@ -60,12 +63,12 @@ class HistogramPlotter:
         Plot histograms for single or multiple datasets for visual comparison.
 
         Returns:
-        - Figure: Matplotlib figure object containing the histogram plot.
+            Figure: Matplotlib figure object containing the histogram plot.
         """
         combined_data = np.concatenate(self.X)
         common_bins = np.histogram_bin_edges(combined_data, bins=self.bins)
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=self.figsize)
         for i, data in enumerate(self.X):
             label = None if self.X_labels is None else self.X_labels[i]
             color = None
