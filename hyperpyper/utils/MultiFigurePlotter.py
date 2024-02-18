@@ -15,12 +15,12 @@ class MultiFigurePlotter:
         Constructs a MultiFigurePlotter object.
 
         Parameters:
-        figures (list): List of matplotlib.figure.Figure objects to be plotted.
-        grid_layout (bool): Whether to display the subplots as a grid.
-        rotate (bool): Whether to rotate the layout by 90 degrees.
-        title (str): Super title for the entire plot.
-        title_fontsize (int): Fontsize for the super title.
-        figsize (tuple): The size of the entire figure in inches (width, height).
+            figures (list): List of matplotlib.figure.Figure objects to be plotted.
+            grid_layout (bool): Whether to display the subplots as a grid.
+            rotate (bool): Whether to rotate the layout by 90 degrees.
+            title (str): Super title for the entire plot.
+            title_fontsize (int): Fontsize for the super title.
+            figsize (tuple): The size of the entire figure in inches (width, height).
         """
         self.figures: List[Figure] = figures
         self.n_subplots: int = len(figures)
@@ -64,9 +64,8 @@ class MultiFigurePlotter:
         The subplots are then created using the `subplots` function from Matplotlib.
 
         Returns:
-        matplotlib.figure.Figure: The generated figure object.
-        numpy.ndarray: Flattened array of axes objects representing the subplots.
-
+            matplotlib.figure.Figure: The generated figure object.
+            numpy.ndarray: Flattened array of axes objects representing the subplots.
         """
         square_len = np.sqrt(self.n_subplots)
         # we sometimes need an additional row depending on the rotation and the number of subplots
@@ -92,11 +91,11 @@ class MultiFigurePlotter:
         Reproduces the contents of one Matplotlib axis onto another axis.
 
         Parameters:
-        source_ax (matplotlib.axes.Axes): The source axis from which the content will be copied.
-        target_ax (matplotlib.axes.Axes): The target axis where the content will be reproduced.
+            source_ax (matplotlib.axes.Axes): The source axis from which the content will be copied.
+            target_ax (matplotlib.axes.Axes): The target axis where the content will be reproduced.
 
         Returns:
-        None
+            None
         """
         # Reproduce line plots
         for line in source_ax.get_lines():
