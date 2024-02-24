@@ -29,6 +29,31 @@ class DataLoaderAggregator:
         self.data_loader = data_loader
         self._full_batch = None
 
+        # TODO: For now, we need to make sure the batches are equal in size
+        self.data_loader.batch_size = self.__closest_batch_size(batch_size, len(self.data_loader.data_set))
+
+
+
+    def __closest_batch_size(batch_size: int, full_size: int) -> int:
+        """
+        Calculate the batch size that is closest to a given batch size
+        where there is no remainder when dividing the full dataset size.
+
+        Args:
+            batch_size (int): Desired batch size.
+            full_size (int): Size of the full dataset.
+
+        Returns:
+            int: Closest batch size that yields equally sized batches.
+        """
+        # Find the largest batch size that yields equal batch sizes
+        for size in range(batch_size, 0, -1):
+            if full_size % size == 0:
+                return size
+
+        # If no batch size is found, return 1 as fallback
+        return 1
+
 
     def collate_fn(self, batch_list):
         """
@@ -172,6 +197,9 @@ class DataAggregator(DataLoaderAggregator):
             raise ValueError("Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)")
             assert False, "Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)"
 
+        # TODO: For now, we need to make sure the batches are equal in size
+        batch_size = self.__closest_batch_size(batch_size, len(files))
+
         data_loader = DataLoader(data_set, batch_size=batch_size, num_workers=num_workers, shuffle=False)
 
         super().__init__(data_loader)
@@ -200,6 +228,9 @@ class DataSetAggregator(DataLoaderAggregator):
         data_set (torch.utils.data.Dataset): The input dataset.
         batch_size (int, optional): Batch size for DataLoader. Default: 8.
         """
+        # TODO: For now, we need to make sure the batches are equal in size
+        batch_size = self.__closest_batch_size(batch_size, len(files))
+
         data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=False, drop_last=True)
         super().__init__(data_loader)
             
