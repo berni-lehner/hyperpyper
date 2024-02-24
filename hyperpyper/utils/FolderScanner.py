@@ -1,9 +1,14 @@
 from pathlib import Path
+import random
 from typing import Union, List, Optional
 
 class FolderScanner:
     @staticmethod
-    def get_files(folders: Union[Path, str, List[Union[Path, str]]], extensions: Optional[Union[str, List[str]]]=None, recursive=False, relative_to: str='') -> List[Path]:
+    def get_files(folders: Union[Path, str, List[Union[Path, str]]],
+                    extensions: Optional[Union[str, List[str]]]=None,
+                    recursive=False,
+                    relative_to: str='',
+                    n_samples: Optional[int]=None) -> List[Path]:
         """
         Get a list of files in the specified folders with optional extensions.
 
@@ -12,6 +17,9 @@ class FolderScanner:
             extensions: Optional. A single extension or a list of extensions. If provided, only files
                 with matching extensions will be included.
             recursive: Wether subfolders are also scanned in a recursive fashion.
+            relative_to: Path to which the file paths should be relative.
+            n_samples: Optional. Number of files to sample. If provided, a random sample of n_samples
+                will be returned.
 
         Returns:
             A list of `Path` objects representing the files.
@@ -55,6 +63,10 @@ class FolderScanner:
                     if file_path.is_file() and file_path.suffix.lower() in extensions:
                         files.append(file_path)
 
+        # subsample to yield n_samples if provided
+        if n_samples is not None:
+            files = random.sample(files, min(n_samples, len(files)))
+
         # TODO: support list that corresponds to folders parameter
         if relative_to:
             files = [Path(p).relative_to(relative_to) for p in files]
@@ -62,12 +74,19 @@ class FolderScanner:
         return files
 
     @staticmethod
-    def get_image_files(folders: Union[Path, str, List[Union[Path, str]]],  recursive=False, relative_to: str='') -> List[Path]:
+    def get_image_files(folders: Union[Path, str, List[Union[Path, str]]],
+                        recursive=False,
+                        relative_to: str='',
+                        n_samples: Optional[int]=None) -> List[Path]:
         """
         Get a list of image files (with default extensions) in the specified folders.
 
         Args:
             folders: A single folder path as a `Path` object or a string, or a list of folder paths.
+            recursive: Wether subfolders are also scanned in a recursive fashion.
+            relative_to: Path to which the file paths should be relative.
+            n_samples: Optional. Number of files to sample. If provided, a random sample of n_samples
+                will be returned.
 
         Returns:
             A list of `Path` objects representing the image files.
@@ -81,12 +100,19 @@ class FolderScanner:
         return FolderScanner.get_files(folders, extensions, recursive=recursive, relative_to=relative_to)
 
     @staticmethod
-    def get_csv_files(folders: Union[Path, str, List[Union[Path, str]]],  recursive=False, relative_to: str='') -> List[Path]:
+    def get_csv_files(folders: Union[Path, str, List[Union[Path, str]]],
+                        recursive=False,
+                        relative_to: str='',
+                        n_samples: Optional[int]=None) -> List[Path]:
         """
         Get a list of CSV files in the specified folders.
 
         Args:
             folders: A single folder path as a `Path` object or a string, or a list of folder paths.
+            recursive: Wether subfolders are also scanned in a recursive fashion.
+            relative_to: Path to which the file paths should be relative.
+            n_samples: Optional. Number of files to sample. If provided, a random sample of n_samples
+                will be returned.
 
         Returns:
             A list of `Path` objects representing the CSV files.
