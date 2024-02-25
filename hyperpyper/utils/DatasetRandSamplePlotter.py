@@ -35,6 +35,7 @@ class DatasetRandSamplePlotter:
         self.title_fontsize: Union[int, None] = title_fontsize
         self.figsize: Union[Tuple[float, float], None] = figsize
 
+
     def plot(self) -> Figure:
         """
         Draws the samples from the Dataset(s).
