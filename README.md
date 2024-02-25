@@ -3,7 +3,7 @@
 
 Insights with Interventions via Transforms:
 - Automatic collation of full batch output from transformation pipelines.
-- Tools to load, plot transformation pipeline outputs.
+- Tools to load, cache, and plot transformation pipeline outputs.
 - Specific transforms for interventions such as single pixel modifications, simulating compression artifacts, dim. reduction.
 - Wrapper for logging/debugging transformation pipelines.
 - Demos and Tutorials
