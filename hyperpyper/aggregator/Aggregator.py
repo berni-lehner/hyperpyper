@@ -138,7 +138,9 @@ class DataLoaderAggregator:
                 self._full_batch = (X, y)
           
 
-        return self._full_batch   
+        #return self._full_batch 
+        #TODO: revisit, and find a way without dict as interim format for an item
+        return self._full_batch['item'], self._full_batch['file']
 
 
 class DataAggregator(DataLoaderAggregator):
