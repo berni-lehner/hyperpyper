@@ -26,15 +26,15 @@ class DataLoaderAggregator:
     transform(): Aggregates mini-batches and returns the full batch.
     """
     def __init__(self, data_loader):
-        self.data_loader = data_loader
         self._full_batch = None
 
         # TODO: For now, we need to make sure the batches are equal in size
-        self.data_loader.batch_size = self.__closest_batch_size(batch_size, len(self.data_loader.data_set))
+        batch_size = self.__closest_batch_size(data_loader.batch_size, len(data_loader.dataset))
+        self.data_loader = DataLoader(data_loader.dataset, batch_size=batch_size, shuffle=False, drop_last=True)
 
 
 
-    def __closest_batch_size(batch_size: int, full_size: int) -> int:
+    def __closest_batch_size(self, batch_size: int, full_size: int) -> int:
         """
         Calculate the batch size that is closest to a given batch size
         where there is no remainder when dividing the full dataset size.
@@ -200,7 +200,7 @@ class DataAggregator(DataLoaderAggregator):
             assert False, "Invalid value for parameter 'num_workers'. There seems to be a thread safety issue (TODO)"
 
         # TODO: For now, we need to make sure the batches are equal in size
-        batch_size = self.__closest_batch_size(batch_size, len(files))
+        #batch_size = self.__closest_batch_size(batch_size, len(files))
 
         data_loader = DataLoader(data_set, batch_size=batch_size, num_workers=num_workers, shuffle=False)
 
@@ -231,7 +231,7 @@ class DataSetAggregator(DataLoaderAggregator):
         batch_size (int, optional): Batch size for DataLoader. Default: 8.
         """
         # TODO: For now, we need to make sure the batches are equal in size
-        batch_size = self.__closest_batch_size(batch_size, len(files))
+        #batch_size = self.__closest_batch_size(batch_size, len(files))
 
         data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=False, drop_last=True)
         super().__init__(data_loader)
