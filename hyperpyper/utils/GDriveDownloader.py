@@ -14,8 +14,7 @@ class GDriveDownloader:
     GDriveDownloader.download_and_unpack(url, destination)
     """
     @staticmethod
-    def download_and_unpack(self,
-                            url: str,
+    def download_and_unpack(url: str,
                             dst: Path,
                             cache=True,
                             remove_org_file=False):
@@ -51,7 +50,7 @@ class GDriveDownloader:
         
 
     @staticmethod
-    def _get_file_name(self, url: str):
+    def _get_file_name(url: str):
         # Send GET request
         response = requests.get(url)
 
