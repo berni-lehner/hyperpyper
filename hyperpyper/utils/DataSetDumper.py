@@ -4,8 +4,8 @@ import torchvision
 from torchvision.transforms import ToTensor
 
 
-from ..transforms import DummyPIL
-from ..aggregator import DataSetAggregator
+#from ..transforms import DummyPIL
+#from ..aggregator import DataSetAggregator
 
 
 class DataSetDumper():
