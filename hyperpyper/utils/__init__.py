@@ -11,3 +11,4 @@ from .PipelineCache import PipelineCache
 from .VisionDatasetDumper import VisionDatasetDumper
 from .ClassToIndexLabelDecoder import ClassToIndexLabelDecoder
 from .IndexToClassLabelDecoder import IndexToClassLabelDecoder
+from .FileToClassLabelDecoder import FileToClassLabelDecoder
