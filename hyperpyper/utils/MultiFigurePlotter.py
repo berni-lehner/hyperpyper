@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.collections import LineCollection
 from matplotlib.figure import Figure
+from matplotlib.transforms import BlendedGenericTransform
 
 
 class MultiFigurePlotter:
@@ -30,6 +31,8 @@ class MultiFigurePlotter:
         self.title_fontsize: Union[int, None] = title_fontsize
         self.figsize: Union[Tuple[float, float], None] = figsize
 
+        if self.n_subplots < 2: 
+            raise ValueError(f"Invalid value for parameter n_subplots={self.n_subplots}.")
 
     def plot(self) -> Figure:
         """
@@ -99,18 +102,51 @@ class MultiFigurePlotter:
         """
         # Reproduce line plots
         for line in source_ax.get_lines():
-            target_ax.plot(line.get_xdata(),
-                        line.get_ydata(),
-                        label=line.get_label(),
-                        color=line.get_color(),
-                        linestyle=line.get_linestyle(),
-                        linewidth=line.get_linewidth(),
-                        marker=line.get_marker(),
-                        markeredgecolor=line.get_markeredgecolor(),
-                        markeredgewidth=line.get_markeredgewidth(),
-                        markerfacecolor=line.get_markerfacecolor(),
-                        markersize=line.get_markersize(),
-                        )
+            # TODO: there might be a better way to check if a line was plotted with axvline or axhline
+            if not isinstance(line.get_transform(), BlendedGenericTransform):
+                target_ax.plot(line.get_xdata(),
+                            line.get_ydata(),
+                            label=line.get_label(),
+                            color=line.get_color(),
+                            linestyle=line.get_linestyle(),
+                            linewidth=line.get_linewidth(),
+                            marker=line.get_marker(),
+                            markeredgecolor=line.get_markeredgecolor(),
+                            markeredgewidth=line.get_markeredgewidth(),
+                            markerfacecolor=line.get_markerfacecolor(),
+                            markersize=line.get_markersize(),
+                            )
+            # Reproduce lines plotted with axvline or axhline
+            else:
+                x_data = line.get_xdata()
+                y_data = line.get_ydata()
+
+                if all(x==x_data[0] for x in x_data):
+                    print("vertical")
+                    target_ax.axvline(x=x_data[0],
+                            label=line.get_label(),
+                            color=line.get_color(),
+                            linestyle=line.get_linestyle(),
+                            linewidth=line.get_linewidth(),
+                            marker=line.get_marker(),
+                            markeredgecolor=line.get_markeredgecolor(),
+                            markeredgewidth=line.get_markeredgewidth(),
+                            markerfacecolor=line.get_markerfacecolor(),
+                            markersize=line.get_markersize(),
+                    )
+                if all(y==y_data[0] for y in y_data):
+                    print("horizontal")              
+                    target_ax.axhline(y=y_data[0],
+                            label=line.get_label(),
+                            color=line.get_color(),
+                            linestyle=line.get_linestyle(),
+                            linewidth=line.get_linewidth(),
+                            marker=line.get_marker(),
+                            markeredgecolor=line.get_markeredgecolor(),
+                            markeredgewidth=line.get_markeredgewidth(),
+                            markerfacecolor=line.get_markerfacecolor(),
+                            markersize=line.get_markersize(),
+                    )
 
         # Reproduce rectangles (histogram bars)
         for artist in source_ax.__dict__['_children']:
@@ -128,6 +164,7 @@ class MultiFigurePlotter:
 
         # Reproduce collections (e.g., LineCollection)
         for collection in source_ax.collections:
+            print(f"collection detected with type: {type(collection)}")
             if isinstance(collection, plt.collections.LineCollection):
                 lc = plt.collections.LineCollection(segments=collection.get_segments(),
                                                     label=collection.get_label(),
