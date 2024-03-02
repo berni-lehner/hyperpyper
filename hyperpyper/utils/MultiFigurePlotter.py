@@ -134,12 +134,69 @@ class MultiFigurePlotter:
                                                     color=collection.get_color(),
                                                     linestyle=collection.get_linestyle(),
                                                     linewidth=collection.get_linewidth(),
-                                                )
+                                                    )
                 target_ax.add_collection(lc)
 
-        # Reproduce axis limits and aspect ratio
+        # Reproduce image
+        for img in source_ax.images:
+            print("image found")
+            image_data = img.get_array()
+            cmap = img.get_cmap()
+            interpolation = img.get_interpolation()
+            extent = img.get_extent()
+            
+            # Reproduce image with properties
+            target_ax.imshow(image_data, cmap=cmap, interpolation=interpolation, extent=extent)
+
+        # Reproduce ticks and labels
+        tick_params = source_ax.yaxis.get_tick_params(which='major')
+        target_ax.yaxis.set_tick_params(which='major',
+            left=tick_params['left'],
+            right=tick_params['right'],
+            labelleft=tick_params['labelleft'],
+            labelright=tick_params['labelright'],
+            gridOn=tick_params['gridOn'],
+        )
+        tick_params = source_ax.xaxis.get_tick_params(which='major')
+        target_ax.xaxis.set_tick_params(which='major',
+            left=tick_params['left'],
+            right=tick_params['right'],
+            labelleft=tick_params['labelleft'],
+            labelright=tick_params['labelright'],
+            gridOn=tick_params['gridOn'],
+        )
+        tick_params = source_ax.yaxis.get_tick_params(which='minor')
+        target_ax.yaxis.set_tick_params(which='minor',
+            left=tick_params['left'],
+            right=tick_params['right'],
+            labelleft=tick_params['labelleft'],
+            labelright=tick_params['labelright'],
+            gridOn=tick_params['gridOn'],
+        )
+        tick_params = source_ax.xaxis.get_tick_params(which='minor')
+        target_ax.xaxis.set_tick_params(which='minor',
+            left=tick_params['left'],
+            right=tick_params['right'],
+            labelleft=tick_params['labelleft'],
+            labelright=tick_params['labelright'],
+            gridOn=tick_params['gridOn'],
+        )
+        target_ax.set_xticks(source_ax.get_xticks())
+        target_ax.set_yticks(source_ax.get_yticks())
+        target_ax.set_xticklabels(source_ax.get_xticklabels())
+        target_ax.set_yticklabels(source_ax.get_yticklabels())
+
+        # Reproduce axis visibility
+        target_ax.xaxis.set_visible(source_ax.xaxis.get_visible())
+        target_ax.yaxis.set_visible(source_ax.yaxis.get_visible())
+        if not source_ax.axison:
+            target_ax.set_axis_off()
+
+        # Reproduce axis limits
         target_ax.set_xlim(source_ax.get_xlim())
         target_ax.set_ylim(source_ax.get_ylim())
+
+        # Reproduce aspect ratio
         target_ax.set_aspect(source_ax.get_aspect())
 
         # Reproduce axis labels
@@ -150,5 +207,6 @@ class MultiFigurePlotter:
         target_ax.set_title(source_ax.get_title())
 
         # Reproduce legend
-        handles, labels = source_ax.get_legend_handles_labels()
-        target_ax.legend(handles, labels)
+        if source_ax.get_legend():
+            handles, labels = source_ax.get_legend_handles_labels()
+            target_ax.legend(handles, labels)
