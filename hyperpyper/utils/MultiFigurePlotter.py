@@ -139,7 +139,6 @@ class MultiFigurePlotter:
 
         # Reproduce image
         for img in source_ax.images:
-            print("image found")
             image_data = img.get_array()
             cmap = img.get_cmap()
             interpolation = img.get_interpolation()
