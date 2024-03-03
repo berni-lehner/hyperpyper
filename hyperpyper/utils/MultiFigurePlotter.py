@@ -122,7 +122,6 @@ class MultiFigurePlotter:
                 y_data = line.get_ydata()
 
                 if all(x==x_data[0] for x in x_data):
-                    print("vertical")
                     target_ax.axvline(x=x_data[0],
                             label=line.get_label(),
                             color=line.get_color(),
@@ -135,7 +134,6 @@ class MultiFigurePlotter:
                             markersize=line.get_markersize(),
                     )
                 if all(y==y_data[0] for y in y_data):
-                    print("horizontal")              
                     target_ax.axhline(y=y_data[0],
                             label=line.get_label(),
                             color=line.get_color(),
@@ -184,7 +182,7 @@ class MultiFigurePlotter:
             # Reproduce image with properties
             target_ax.imshow(image_data, cmap=cmap, interpolation=interpolation, extent=extent)
 
-        # Reproduce ticks and labels
+        # Reproduce ticks
         tick_params = source_ax.yaxis.get_tick_params(which='major')
         target_ax.yaxis.set_tick_params(which='major',
             left=tick_params['left'],
@@ -219,8 +217,21 @@ class MultiFigurePlotter:
         )
         target_ax.set_xticks(source_ax.get_xticks())
         target_ax.set_yticks(source_ax.get_yticks())
+
+        # Reproduce tick labels
         target_ax.set_xticklabels(source_ax.get_xticklabels())
         target_ax.set_yticklabels(source_ax.get_yticklabels())
+
+        #lbl = source_ax.get_yticklabels()[0]
+        #print(lbl)
+        #target_ax.set_yticklabels(source_ax.get_yticklabels(),
+        #    fontproperties=lbl.get_font_properties(),
+        #    color=lbl.get_color(),
+        #    va=lbl.get_va(),
+        #    ha=lbl.get_ha(),
+        #    rotation=lbl.get_rotation(),
+        #)
+
 
         # Reproduce axis visibility
         target_ax.xaxis.set_visible(source_ax.xaxis.get_visible())
@@ -236,11 +247,31 @@ class MultiFigurePlotter:
         target_ax.set_aspect(source_ax.get_aspect())
 
         # Reproduce axis labels
-        target_ax.set_xlabel(source_ax.get_xlabel())
-        target_ax.set_ylabel(source_ax.get_ylabel())
+        lbl = source_ax.xaxis.label
+        target_ax.set_xlabel(xlabel=source_ax.get_xlabel(),
+            fontproperties=lbl.get_font_properties(),
+            color=lbl.get_color(),
+            va=lbl.get_va(),
+            ha=lbl.get_ha(),
+            rotation=lbl.get_rotation()
+        )        
+        lbl = source_ax.yaxis.label
+        target_ax.set_ylabel(ylabel=source_ax.get_ylabel(),
+            fontproperties=lbl.get_font_properties(),
+            color=lbl.get_color(),
+            va=lbl.get_va(),
+            ha=lbl.get_ha(),
+            rotation=lbl.get_rotation()
+        )
         
         # Reproduce title
-        target_ax.set_title(source_ax.get_title())
+        target_ax.set_title(label=source_ax.get_title(),
+            fontproperties=source_ax.title.get_font_properties(),
+            color=source_ax.title.get_color(),
+            va=source_ax.title.get_va(),
+            ha=source_ax.title.get_ha(),
+            rotation=source_ax.title.get_rotation()
+        )
 
         # Reproduce legend
         if source_ax.get_legend():
