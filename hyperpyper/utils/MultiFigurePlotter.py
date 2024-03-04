@@ -45,11 +45,9 @@ class MultiFigurePlotter:
             if self.rotate:
                 nrows = 1
                 ncols = self.n_subplots
-                #fig, axes = plt.subplots(nrows=1, ncols=self.n_subplots, figsize=self.figsize)
             else:
                 nrows = self.n_subplots
                 ncols = 1
-                #fig, axes = plt.subplots(nrows=self.n_subplots, ncols=1, figsize=self.figsize)
             fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=self.figsize)
 
         # copy content into subplot axes
