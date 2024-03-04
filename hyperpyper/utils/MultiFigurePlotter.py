@@ -162,7 +162,7 @@ class MultiFigurePlotter:
 
         # Reproduce collections (e.g., LineCollection)
         for collection in source_ax.collections:
-            print(f"collection detected with type: {type(collection)}")
+            #print(f"collection detected with type: {type(collection)}")
             if isinstance(collection, plt.collections.LineCollection):
                 lc = plt.collections.LineCollection(segments=collection.get_segments(),
                                                     label=collection.get_label(),
@@ -172,15 +172,23 @@ class MultiFigurePlotter:
                                                     )
                 target_ax.add_collection(lc)
 
-        # Reproduce image
+        # Reproduce images
         for img in source_ax.images:
-            image_data = img.get_array()
-            cmap = img.get_cmap()
-            interpolation = img.get_interpolation()
-            extent = img.get_extent()
-            
-            # Reproduce image with properties
-            target_ax.imshow(image_data, cmap=cmap, interpolation=interpolation, extent=extent)
+            target_ax.imshow(img.get_array(),
+                cmap=img.get_cmap(),
+                interpolation=img.get_interpolation(),
+                extent=img.get_extent())
+
+        # Reproduce text objects
+        for text_obj in source_ax.texts:
+            x, y = text_obj.get_position()
+            target_ax.text(x=x, y=y,
+                s=text_obj.get_text(),
+                color=text_obj.get_color(),
+                fontsize=text_obj.get_fontsize(),
+                fontweight=text_obj.get_fontweight(),
+                ha=text_obj.get_horizontalalignment(),
+                va=text_obj.get_verticalalignment())
 
         # Reproduce ticks
         tick_params = source_ax.yaxis.get_tick_params(which='major')
@@ -219,19 +227,26 @@ class MultiFigurePlotter:
         target_ax.set_yticks(source_ax.get_yticks())
 
         # Reproduce tick labels
-        target_ax.set_xticklabels(source_ax.get_xticklabels())
-        target_ax.set_yticklabels(source_ax.get_yticklabels())
-
-        #lbl = source_ax.get_yticklabels()[0]
-        #print(lbl)
-        #target_ax.set_yticklabels(source_ax.get_yticklabels(),
-        #    fontproperties=lbl.get_font_properties(),
-        #    color=lbl.get_color(),
-        #    va=lbl.get_va(),
-        #    ha=lbl.get_ha(),
-        #    rotation=lbl.get_rotation(),
-        #)
-
+        lbls = source_ax.get_xticklabels()
+        if len(lbls) > 0:
+            lbl = lbls[0]
+            target_ax.set_xticklabels(lbls,
+                fontproperties=lbl.get_font_properties(),
+                color=lbl.get_color(),
+                va=lbl.get_va(),
+                ha=lbl.get_ha(),
+                rotation=lbl.get_rotation(),
+            )
+        lbls = source_ax.get_yticklabels()
+        if len(lbls) > 0:
+            lbl = lbls[0]
+            target_ax.set_yticklabels(lbls,
+                fontproperties=lbl.get_font_properties(),
+                color=lbl.get_color(),
+                va=lbl.get_va(),
+                ha=lbl.get_ha(),
+                rotation=lbl.get_rotation(),
+            )
 
         # Reproduce axis visibility
         target_ax.xaxis.set_visible(source_ax.xaxis.get_visible())
