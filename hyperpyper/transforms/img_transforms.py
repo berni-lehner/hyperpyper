@@ -36,9 +36,8 @@ class FileToPIL:
             
         return result
  
-
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f"{self.__class__.__name__}(mode={self.mode})"
     
 
 class DummyPIL:
@@ -117,3 +116,20 @@ class PILtoHist:
 
     def __repr__(self):
         return f"{self.__class__.__name__}(bins={self.bins})"
+
+
+class PILTranspose:
+    def __call__(self, img):
+        """
+        Transpose the input image.
+
+        Args:
+            img (PIL Image): Input image.
+
+        Returns:
+            PIL Image: Transposed image.
+        """
+        return img.transpose(Image.TRANSPOSE)        
+
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
