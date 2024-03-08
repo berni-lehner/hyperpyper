@@ -1,6 +1,57 @@
 import torch
 import torch.nn as nn
 
+
+class TensorToNumpy(object):
+    def __call__(self, X):
+        return X.numpy()
+    
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
+
+
+class FlattenTensor:
+    def __call__(self, tensor):
+        return tensor.view(-1)
+    
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
+    
+
+class SqueezeTensor:
+    def __call__(self, tensor):
+        return tensor.squeeze()
+
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
+            
+
+class UnsqueezeTensor:
+    def __init__(self, dim=0):
+        self.dim = dim
+
+    def __call__(self, tensor):
+        return tensor.unsqueeze(self.dim)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(dim={self.dim})"
+
+    
+class ToDevice:
+    def __init__(self, device=None):
+        if not device:
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        self.device = device
+        
+    def __call__(self, data):
+        return data.to(self.device)
+
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__}(device={self.device})"
+
+
 class PyTorchEmbedding:
     """
     A utility class for extracting embeddings from a PyTorch model.
@@ -100,6 +151,7 @@ class PyTorchEmbedding:
 
         return embeddings
     
+    #TODO: proper string construction with properties
     def __repr__(self):
         return self.__class__.__name__ + '()'
 
@@ -152,8 +204,88 @@ class PyTorchOutput:
             result = self.model(img).detach()  # TODO: Not sure if we even need detach() here
 
         return result
-
-
     
     def __repr__(self):
         return self.__class__.__name__ + '()'
+
+
+
+# TODO: test!!!
+class PyTorchExplain:
+    """
+    Computes Integrated Gradients using a PyTorch model.
+
+    Methods:
+    __call__(input_image, target_class=None): Computes Integrated Gradients for the input image with respect to the target class.
+    """
+
+    def __init__(self, model, baseline=None, steps=100, device=None):
+        """
+        Initialize the PyTorchExplain.
+
+        Args:
+        model (torch.nn.Module): The PyTorch model for which Integrated Gradients will be computed.
+        baseline (torch.Tensor or None, optional): The baseline input for the integration path. If None, a zero baseline is used. Default: None.
+        steps (int, optional): The number of steps for the numerical integration. Default: 100.
+        device (str or torch.device, optional): The device to use for computation. If None, GPU is used if available. Default: None.
+        """
+        self.model = model
+        self.baseline = baseline
+        self.steps = steps
+
+        if not device:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = device
+
+        # Set the module in evaluation mode
+        self.model.eval()
+
+        if self.baseline is not None:
+            self.baseline = self.baseline.to(self.device)
+
+    def __call__(self, input_image, target_class=None):
+        """
+        Computes Integrated Gradients for the input image with respect to the target class.
+
+        Args:
+        input_image (torch.Tensor): The input image tensor.
+        target_class (int or None, optional): The target class index. If None, the class with the highest probability is used. Default: None.
+
+        Returns:
+        torch.Tensor: The computed Integrated Gradients.
+        """
+        input_image = input_image.to(self.device)
+        input_image.requires_grad_()
+
+        if target_class is None:
+            output = self.model(input_image)
+            target_class = output.argmax()
+
+        baseline = self.baseline or torch.zeros_like(input_image)
+        scaled_inputs = [baseline + (float(i) / self.steps) * (input_image - baseline) for i in range(self.steps + 1)]
+
+        integrated_gradients = torch.zeros_like(input_image)
+        for scaled_input in scaled_inputs:
+            gradients = self._compute_gradients(scaled_input, target_class)
+            integrated_gradients += gradients
+
+        integrated_gradients *= (input_image - baseline) / self.steps
+
+        return integrated_gradients
+
+    def _compute_gradients(self, input_image, target_class):
+        """
+        Computes gradients of the target class output with respect to the input image.
+
+        Args:
+        input_image (torch.Tensor): The input image tensor.
+        target_class (int): The target class index.
+
+        Returns:
+        torch.Tensor: The computed gradients.
+        """
+        self.model.zero_grad()
+        output = self.model(input_image)
+        output[0, target_class].backward()
+
+        return input_image.grad.clone()
