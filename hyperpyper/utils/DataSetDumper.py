@@ -2,6 +2,7 @@ from pathlib import Path
 from collections import Counter
 import torchvision
 from torchvision.transforms import ToTensor
+from torch import Tensor
 
 
 #from ..transforms import DummyPIL
@@ -25,8 +26,6 @@ class DataSetDumper():
         self.root = root
 
 
-
-
     def dump(self, targets=[]):
         class_labels = []
 
@@ -35,7 +34,20 @@ class DataSetDumper():
             # Get target list
             if hasattr(self.dataset, 'targets'):
                 # Determine unique targets
-                ctr = Counter(self.dataset.targets)
+                if isinstance(self.dataset.targets, Tensor):
+                    all_targets = self.dataset.targets.numpy()
+                else:
+                    all_targets = self.dataset.targets
+                ctr = Counter(all_targets)
+                targets = ctr.keys()
+                print(targets)
+            elif hasattr(self.dataset, 'labels'):
+                # Determine unique targets
+                if isinstance(self.dataset.labels, Tensor):
+                    all_targets = self.dataset.labels.numpy()
+                else:
+                    all_targets = self.dataset.labels
+                ctr = Counter(all_targets)
                 targets = ctr.keys()
                 print(targets)
             else: # Iterate the dataset and figure out the targets
@@ -50,7 +62,7 @@ class DataSetDumper():
                         ToTensor(),
                     ]
                 )
-                dataset.transform = dummy_transform
+                self.dataset.transform = dummy_transform
                 agg = DataSetAggregator(self.dataset, batch_size=1)
                 dummy_result = agg.transform()
 
