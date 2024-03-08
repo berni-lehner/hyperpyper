@@ -10,14 +10,6 @@ from pathlib import Path
 from typing import Union, List
 
 
-class TensorToNumpy(object):
-    def __call__(self, X):
-        return X.numpy()
-    
-    def __repr__(self):
-        return self.__class__.__name__ + '()'
-
-    
 class FlattenArray:
     def __call__(self, img):
         if len(img.shape) == 2:
@@ -56,77 +48,7 @@ class ReshapeArray:
         return X_reshaped
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
-
-    
-    
-class ProjectTransform:
-    """
-    A data transformation class that applies a given data projector to transform input data to a lower dimension.
-
-    Parameters:
-    -----------
-    projector : object
-        A dimensionality reduction model or function that implements a 'fit_transform' method to project input data.
-        Compatible dimensionality reducers include UMAP, t-SNE, Random Projections, and others following scikit-learn's API.
-
-    Methods:
-    --------
-    __call__(X)
-        Apply the data projection to input data X.
-
-    Attributes:
-    -----------
-    projector : object
-        The dimensionality reduction model used for transforming data.
-
-    Notes:
-    ------
-    Some dimensionality reducers like UMAP and t-SNE require training before being used with ProjectTransform.
-    They must be trained using their 'fit' or 'fit_transform' methods on the entire dataset, as they cannot be trained with mini-batches.
-    """
-    def __init__(self, projector):
-        self.projector = projector
-
-    def __call__(self, X):
-        X_trans = self.projector.transform(X)
-        
-        return X_trans
-    
-    def __repr__(self):
-        return self.__class__.__name__ + '()'
-    
-
-class FlattenTensor:
-    def __call__(self, tensor):
-        return tensor.view(-1)
-    
-    def __repr__(self):
-        return self.__class__.__name__ + '()'
-    
-
-class SqueezeTensor:
-    def __call__(self, tensor):
-        return tensor.squeeze()
-
-    def __repr__(self):
-        return self.__class__.__name__ + '()'
-            
-    
-class ToDevice:
-    def __init__(self, device=None):
-        if not device:
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        
-        self.device = device
-
-        
-    def __call__(self, data):
-        return data.to(self.device)
-
-    
-    def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f"{self.__class__.__name__}(shape={self.shape})"
     
 
 class ToArgMax:
@@ -154,7 +76,7 @@ class ToLabel:
     def __repr__(self):
         return f"{self.__class__.__name__}(labels={self.labels})"
 
-
+# TODO: clean up type checks (Image, PIL.Image)
 class DebugTransform:
     """
     A utility class for debugging transformations by printing input arguments and their characteristics.
@@ -212,7 +134,8 @@ class DebugTransform:
             if isinstance(v, (torch.Tensor, np.ndarray)):
                 print(f"  Shape: {v.shape}")
             elif isinstance(v, PIL.Image.Image):
-                print(f"  Size: {v.size}")
+                print(f"  Channels: {len(v.getbands())}, Size: {v.size}")
+                #print(f"  Size: {v.size}")
         
         return self.transform(*args, **kwargs)
     
