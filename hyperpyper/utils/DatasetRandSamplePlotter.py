@@ -7,7 +7,12 @@ from typing import List, Tuple, Union, Optional
 class DatasetRandSamplePlotter:
     def __init__(self, dataset: Union[Dataset, List[Dataset]],
                 n_samples: int = 16,
-                grid_layout: bool = True, rotate: bool = False, title_label: Optional[bool] = False,
+                title_label: Optional[bool] = False,
+                classes = [],
+                title_prefix = '',
+                title_postfix = '',
+                grid_layout: bool = True,
+                rotate: bool = False,
                 frame: Optional[bool] = True,
                 title: Union[str, None] = None, title_fontsize: Union[int, None] = None, 
                 figsize: Union[Tuple[float, float], None] = None):
@@ -17,9 +22,12 @@ class DatasetRandSamplePlotter:
         Parameters:
             dataset (Union[torch.utils.data.Dataset, List[torch.utils.data.Dataset]]): Single or list of PyTorch datasets.
             n_samples (int): Number of samples to plot.
+            title_label (bool, optional): If True, display labels as titles for each sample. Default is False.
+            classes (list, optional): If given, maps the class indices to class labels according to this mapping (used in title_label)
+            title_prefix (str): Prefix string to be added to each title.
+            title_postfix (str): Postfix string to be added to each title.
             grid_layout (bool): Whether to display the subplots as a grid.
             rotate (bool): Whether to rotate the layout by 90 degrees.
-            title_label (bool, optional): If True, display labels as titles for each sample. Default is False.
             frame (bool, optional): If True, display frames around the images. Default is True.
             title (str): Super title for the entire plot.
             title_fontsize (int): Fontsize for the super title.
@@ -27,9 +35,12 @@ class DatasetRandSamplePlotter:
         """
         self.dataset: Dataset = dataset
         self.n_samples: int = n_samples
+        self.title_label: bool = title_label
+        self.classes = classes
+        self.title_prefix = title_prefix
+        self.title_postfix = title_postfix
         self.grid_layout: bool = grid_layout
         self.rotate: bool = rotate
-        self.title_label: bool = title_label
         self.frame: bool = frame
         self.title: Union[str, None] = title
         self.title_fontsize: Union[int, None] = title_fontsize
@@ -71,9 +82,9 @@ class DatasetRandSamplePlotter:
             fig, axes = self.create_subplots()
         else:
             if self.rotate:
-                fig, axes = plt.subplots(nrows=1, ncols=self.n_samples)
+                fig, axes = plt.subplots(nrows=1, ncols=self.n_samples, figsize=self.figsize)
             else:
-                fig, axes = plt.subplots(nrows=self.n_samples, ncols=1)
+                fig, axes = plt.subplots(nrows=self.n_samples, ncols=1, figsize=self.figsize)
 
         # Flatten the axes array for easier indexing
         axes = axes.flatten()
@@ -83,7 +94,12 @@ class DatasetRandSamplePlotter:
             ax.imshow(np.transpose(sampled_images[i], (1, 2, 0)))
 
             if self.title_label:
-                ax.set_title(f"{sampled_labels[i]}")
+                # show either class indices or labels
+                if len(self.classes) > 0:
+                    lbl = self.classes[sampled_labels[i]]
+                else:
+                    lbl = sampled_labels[i]
+                ax.set_title(f"{self.title_prefix}{lbl}{self.title_postfix}")
 
             ax.tick_params(left=False, right=False, labelleft=False, labelbottom=False, bottom=False)
 
