@@ -40,9 +40,9 @@ The notebooks contain ...
     - [FolderScanner](https://github.com/berni-lehner/hyperpyper/blob/main/FolderScanner_demo.ipynb)
     - [PathList](https://github.com/berni-lehner/hyperpyper/blob/main/PathList_demo.ipynb)
     - [Pickler](https://github.com/berni-lehner/hyperpyper/blob/main/Pickler_demo.ipynb)
-    - [PipelineCache](https://github.com/berni-lehner/hyperpyper/blob/main/CIFAR10_umap_caching_demo.ipynb)
 
 - **Pytorch demos**
+    - [Caching embeddings and UMAP](https://github.com/berni-lehner/hyperpyper/blob/main/CIFAR10_umap_caching_demo.ipynb)
 
 - **sklearn demos**
 
