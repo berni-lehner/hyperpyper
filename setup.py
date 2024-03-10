@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='hyperpyper',
-    version='0.1.4',
+    version='0.1.5',
     author='Bernhard Lehner',
     author_email='berni.lehner@gmail.com',
     description='Automatic collation of full batch output from transformation pipelines.',
