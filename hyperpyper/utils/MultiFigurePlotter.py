@@ -5,91 +5,52 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.collections import LineCollection
 from matplotlib.figure import Figure
-from matplotlib.transforms import BlendedGenericTransform
+from matplotlib.transforms import BlendedGenericTransform # to check if a line was plotted with axvline or axhline
 
+from ..utils import SubplotPlotter
 
-class MultiFigurePlotter:
-    def __init__(self, figures: List[Figure], grid_layout: bool = True, rotate: bool = False, 
-                 title: Union[str, None] = None, title_fontsize: Union[int, None] = None, 
-                 figsize: Union[Tuple[float, float], None] = None):
+class MultiFigurePlotter(SubplotPlotter):
+    def __init__(self,
+                figures: List[Figure],
+                layout: str = 'auto',
+                rotate: bool = False,
+                suptitle: Union[str, None] = None,
+                suptitle_fontsize: Union[int, None] = None,
+                suptitle_fontweight: Union[str, None] = None,
+                figsize: Union[Tuple[float, float], None] = None):
         """
         Constructs a MultiFigurePlotter object.
 
         Parameters:
             figures (list): List of matplotlib.figure.Figure objects to be plotted.
-            grid_layout (bool): Whether to display the subplots as a grid.
+            layout (str): The layout mode for arranging subplots. Options are 'auto', 'grid', and 'vector'.
             rotate (bool): Whether to rotate the layout by 90 degrees.
-            title (str): Super title for the entire plot.
-            title_fontsize (int): Fontsize for the super title.
+            suptitle (str): Super title for the entire plot.
+            suptitle_fontsize (int): Fontsize for the super title.
+            suptitle_fontweight (str): Font weight for the super title.
             figsize (tuple): The size of the entire figure in inches (width, height).
         """
         self.figures: List[Figure] = figures
-        self.n_subplots: int = len(figures)
-        self.grid_layout: bool = grid_layout
-        self.rotate: bool = rotate
-        self.title: Union[str, None] = title
-        self.title_fontsize: Union[int, None] = title_fontsize
-        self.figsize: Union[Tuple[float, float], None] = figsize
 
-        if self.n_subplots < 2: 
-            raise ValueError(f"Invalid value for parameter n_subplots={self.n_subplots}.")
+        super().__init__(n_subplots=len(figures),
+            layout=layout,
+            rotate=rotate,
+            suptitle=suptitle,
+            suptitle_fontsize=suptitle_fontsize,
+            suptitle_fontweight=suptitle_fontweight,
+            figsize=figsize)
 
     def plot(self) -> Figure:
         """
         Draws the figures in corresponding subplots.
         """
-        # Create the layout of subplots
-        if self.grid_layout:
-            fig, axes = self.create_subplots()
-        else:
-            if self.rotate:
-                nrows = 1
-                ncols = self.n_subplots
-            else:
-                nrows = self.n_subplots
-                ncols = 1
-            fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=self.figsize)
-
         # copy content into subplot axes
         for i,f in enumerate(self.figures):
-            self.ax2ax(source_ax=f.get_axes()[0], target_ax=axes[i])
+            self.ax2ax(source_ax=f.get_axes()[0], target_ax=self.axes[i])
 
-        if self.title is not None:
-            plt.suptitle(self.title, fontsize=self.title_fontsize)
-            
-        fig.tight_layout()
+        super()._finish_plot()
 
-        return fig  
-
-
-    def create_subplots(self) -> Tuple[Figure, np.ndarray]:
-        """
-        Creates subplots in a grid layout.
-
-        This function calculates the number of rows and columns based on the desired number of subplots.
-        The subplots are then created using the `subplots` function from Matplotlib.
-
-        Returns:
-            matplotlib.figure.Figure: The generated figure object.
-            numpy.ndarray: Flattened array of axes objects representing the subplots.
-        """
-        square_len = np.sqrt(self.n_subplots)
-        # we sometimes need an additional row depending on the rotation and the number of subplots
-        row_appendix = int(bool(np.remainder(self.n_subplots,square_len))*self.rotate)
-
-        nrows = int(square_len) + row_appendix
-        ncols = int((self.n_subplots+nrows-1) // nrows)
-        
-        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=self.figsize)
-
-        # Flatten the axes array for easier indexing
-        axes = axes.flatten()
-
-        # Remove axis and ticks for empty subplots
-        for i in range(self.n_subplots, nrows * ncols):
-            axes[i].axis('off')
-        
-        return fig, axes
+        return self.fig  
 
 
     def ax2ax(self, source_ax, target_ax) -> None:
