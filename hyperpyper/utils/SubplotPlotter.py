@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 class SubplotPlotter:
     def __init__(self,
                 n_subplots: int,
-                layout: str = 'auto',
+                layout: Union[str, tuple] = 'auto',
                 rotate: bool = False,
                 suptitle: Union[str, None] = None,
                 suptitle_fontsize: Union[int, None] = None,
@@ -19,7 +19,7 @@ class SubplotPlotter:
 
         Parameters:
             n_subplots (int): The number of subplots.
-            layout (str): The layout mode for arranging subplots. Options are 'auto', 'grid', and 'vector'.
+            layout (str, tuple): The layout mode for arranging subplots. Options are 'auto', 'grid', and 'vector' or a tuple (nrows, ncols).
             rotate (bool): Whether to rotate the layout by 90 degrees.
             suptitle (str): Super title for the entire plot.
             suptitle_fontsize (int): Fontsize for the super title.
@@ -66,6 +66,12 @@ class SubplotPlotter:
             self._create_vector()
         elif self.layout == 'auto':
             self._create_autogrid()
+        elif isinstance(self.layout, tuple) and len(self.layout) == 2:
+            self.n_rows = self.layout[0]
+            self.n_cols = self.layout[1]
+
+            if(self.n_subplots > self.n_rows*self.n_cols):
+                raise ValueError(f"Invalid value for parameter layout={self.layout}. Not enough subplots for n_subplots={self.n_subplots}")
         else:
             raise ValueError(f"Invalid value for parameter layout={self.layout}.")
 
