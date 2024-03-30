@@ -64,6 +64,9 @@ class MultiFigurePlotter(SubplotPlotter):
         Returns:
             None
         """
+        # Reproduce background color
+        target_ax.set_facecolor(source_ax.get_facecolor())
+
         # Reproduce line plots
         for line in source_ax.get_lines():
             # TODO: there might be a better way to check if a line was plotted with axvline or axhline
