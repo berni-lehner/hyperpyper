@@ -3,7 +3,7 @@ from typing import List, Tuple, Union
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.collections import LineCollection
+from matplotlib.collections import LineCollection, PathCollection
 from matplotlib.figure import Figure
 from matplotlib.transforms import BlendedGenericTransform # to check if a line was plotted with axvline or axhline
 
@@ -130,14 +130,20 @@ class MultiFigurePlotter(SubplotPlotter):
         # Reproduce collections (e.g., LineCollection)
         for collection in source_ax.collections:
             #print(f"collection detected with type: {type(collection)}")
-            if isinstance(collection, plt.collections.LineCollection):
-                lc = plt.collections.LineCollection(segments=collection.get_segments(),
-                                                    label=collection.get_label(),
-                                                    color=collection.get_color(),
-                                                    linestyle=collection.get_linestyle(),
-                                                    linewidth=collection.get_linewidth(),
-                                                    )
+            # Reproduce lines
+            if isinstance(collection, LineCollection):
+                lc = LineCollection(segments=collection.get_segments(),
+                    label=collection.get_label(),
+                    color=collection.get_color(),
+                    linestyle=collection.get_linestyle(),
+                    linewidth=collection.get_linewidth(),
+                    )
                 target_ax.add_collection(lc)
+            # Reproduce scatterplot
+            if isinstance(collection, PathCollection):
+                x_data = [d[0] for d in collection.get_offsets().data]
+                y_data = [d[1] for d in collection.get_offsets().data]
+                target_ax.scatter(x_data, y_data)                
 
         # Reproduce images
         for img in source_ax.images:
