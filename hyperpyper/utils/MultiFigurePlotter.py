@@ -143,7 +143,19 @@ class MultiFigurePlotter(SubplotPlotter):
             if isinstance(collection, PathCollection):
                 x_data = [d[0] for d in collection.get_offsets().data]
                 y_data = [d[1] for d in collection.get_offsets().data]
-                target_ax.scatter(x_data, y_data)                
+
+                # Reproduce properties of the original scatterplot
+                properties = {
+                        'color': collection.get_facecolor()[0],
+                        'edgecolor': collection.get_edgecolor()[0],
+                        'alpha': collection.get_alpha(),
+                        'linestyle': collection.get_linestyle(),
+                        'linewidth': collection.get_linewidth(),
+                        's': collection.get_sizes()[0],                        
+                    }
+                scatter = target_ax.scatter(x_data, y_data, **properties)
+                # Reproduce remaining properties of marker
+                scatter.set_paths(collection.get_paths())
 
         # Reproduce images
         for img in source_ax.images:
