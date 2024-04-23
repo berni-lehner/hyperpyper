@@ -279,6 +279,6 @@ class MultiFigurePlotter(SubplotPlotter):
             target_ax.legend(handles, labels)
 
             # Iterate over text elements in the legend and set font properties in the target legend
-            for source_text, target_text in zip(source_ax.get_legend().get_texts(), target_ax.legend().get_texts()):
+            for source_text, target_text in zip(source_ax.get_legend().get_texts(), target_ax.get_legend().get_texts()):
                 font_properties = source_text.get_font_properties()
                 target_text.set_fontproperties(font_properties)
