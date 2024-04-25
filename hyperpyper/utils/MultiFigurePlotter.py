@@ -3,8 +3,9 @@ from typing import List, Tuple, Union
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.collections import LineCollection, PathCollection
+from matplotlib.collections import LineCollection, PathCollection, PolyCollection
 from matplotlib.figure import Figure
+from matplotlib.artist import Artist
 from matplotlib.transforms import BlendedGenericTransform # to check if a line was plotted with axvline or axhline
 
 from ..utils import SubplotPlotter
@@ -51,6 +52,43 @@ class MultiFigurePlotter(SubplotPlotter):
         super()._finish_plot()
 
         return self.fig  
+
+
+    def _recreate_PolyCollection(self, artist: Artist) -> PolyCollection:
+        """
+        Reproduce a PolyCollection artist with the same properties.
+
+        Parameters:
+            artist (matplotlib.artist.Artist): The PolyCollection artist to be reproduced.
+
+        Returns:
+            matplotlib.collections.PolyCollection: The reproduced PolyCollection with the same properties.
+
+        Raises:
+            ValueError: If the input artist is not a PolyCollection.
+        """
+        if not isinstance(artist, PolyCollection):
+            raise ValueError(f"Input artist is not a PolyCollection, but {type(artist)}.")
+
+        vertices = artist.get_paths()[0].vertices
+        facecolor = artist.get_facecolor()[0]
+        edgecolor = artist.get_edgecolor()[0]
+        alpha = artist.get_alpha()
+        linewidth = artist.get_linewidth()
+        linestyle = artist.get_linestyle()
+        # For some reason, linestyle (the dashes) gets modifed by linewidth, and we need to compensate
+        if linestyle[0][1] is not None:
+            linestyle = (linestyle[0][0], linestyle[0][1]/linewidth)
+
+        # Create a PolyCollection with the same properties
+        poly_collection = PolyCollection([vertices],
+                facecolors=facecolor,
+                edgecolors=edgecolor,
+                alpha=alpha,
+                linestyle=linestyle,
+                linewidth=linewidth)
+
+        return poly_collection
 
 
     def ax2ax(self, source_ax, target_ax) -> None:
@@ -126,9 +164,18 @@ class MultiFigurePlotter(SubplotPlotter):
                                                     linewidth=rect.get_linewidth(),
                                                     linestyle=rect.get_linestyle()
                                                     ))
+            # Reproduce PolyCollection (plotted with fill_between())
+            if isinstance(artist, PolyCollection):
+                for artist in source_ax.get_children():
+                    if isinstance(artist, PolyCollection):
+                        poly_collection = self._recreate_PolyCollection(artist)
+                        target_ax.add_collection(poly_collection)
 
         # Reproduce collections (e.g., LineCollection)
         for collection in source_ax.collections:
+            if isinstance(artist, PolyCollection):
+                print("collections.PolyCollection")
+
             #print(f"collection detected with type: {type(collection)}")
             # Reproduce lines
             if isinstance(collection, LineCollection):
@@ -276,7 +323,16 @@ class MultiFigurePlotter(SubplotPlotter):
         # Reproduce legend
         if source_ax.get_legend():
             handles, labels = source_ax.get_legend_handles_labels()
-            target_ax.legend(handles, labels)
+
+            new_handles = []
+            for handle in handles:
+                if isinstance(handle, PolyCollection):
+                    # Create a new PolyCollection with the same properties
+                    new_handle = self._recreate_PolyCollection(handle)
+                    new_handles.append(new_handle)
+                else:
+                    new_handles.append(handle)
+            target_ax.legend(new_handles, labels)
 
             # Iterate over text elements in the legend and set font properties in the target legend
             for source_text, target_text in zip(source_ax.get_legend().get_texts(), target_ax.get_legend().get_texts()):
