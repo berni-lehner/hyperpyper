@@ -195,13 +195,21 @@ class MultiFigurePlotter(SubplotPlotter):
 
                 # Reproduce properties of the original scatterplot
                 properties = {
-                        'color': collection.get_facecolor()[0],
-                        'edgecolor': collection.get_edgecolor()[0],
                         'alpha': collection.get_alpha(),
                         'linestyle': collection.get_linestyle(),
                         'linewidth': collection.get_linewidth(),
-                        's': collection.get_sizes()[0],                        
-                    }
+                        's': collection.get_sizes()[0],
+                }
+                # Extract the individual color data
+                c = collection.get_array()
+                if c is None: # Same color for all markers
+                    properties['color'] = collection.get_facecolor()[0]
+                    properties['edgecolor'] = collection.get_edgecolor()[0]
+                else: # Individual colors for all markers
+                    properties['edgecolor'] = collection.get_edgecolor()
+                    properties['cmap'] = collection.get_cmap()
+                    properties['c'] = c
+                    
                 scatter = target_ax.scatter(x_data, y_data, **properties)
                 # Reproduce remaining properties of marker
                 scatter.set_paths(collection.get_paths())
