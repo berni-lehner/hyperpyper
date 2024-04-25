@@ -72,7 +72,9 @@ class MultiFigurePlotter(SubplotPlotter):
 
         vertices = artist.get_paths()[0].vertices
         facecolor = artist.get_facecolor()[0]
-        edgecolor = artist.get_edgecolor()[0]
+        edgecolor = artist.get_edgecolor()
+        if edgecolor.size > 0:
+            edgecolor = edgecolor[0]
         alpha = artist.get_alpha()
         linewidth = artist.get_linewidth()
         linestyle = artist.get_linestyle()
