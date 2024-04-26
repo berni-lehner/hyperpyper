@@ -199,6 +199,7 @@ class MultiFigurePlotter(SubplotPlotter):
                         'linestyle': collection.get_linestyle(),
                         'linewidth': collection.get_linewidth(),
                         's': collection.get_sizes()[0],
+                        'zorder': collection.get_zorder(),
                 }
                 # Extract the individual color data
                 c = collection.get_array()
