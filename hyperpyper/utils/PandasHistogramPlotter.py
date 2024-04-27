@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from typing import List, Tuple, Union
 
+from matplotlib.colors import Colormap
+
 from ..utils import HistogramPlotter
 
 class PandasHistogramPlotter(HistogramPlotter):
