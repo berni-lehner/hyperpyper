@@ -5,6 +5,7 @@ from .DataSetDumper import DataSetDumper
 from .DatasetRandSamplePlotter import DatasetRandSamplePlotter
 from .EmbeddingPlotter import EmbeddingPlotter
 from .HistogramPlotter import HistogramPlotter
+from .PandasHistogramPlotter import PandasHistogramPlotter
 from .SubplotPlotter import SubplotPlotter
 from .MultiFigurePlotter import MultiFigurePlotter
 from .MultiImagePlotter import MultiImagePlotter
