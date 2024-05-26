@@ -3,6 +3,7 @@ import io
 import random
 import pickle
 import hashlib
+import cv2
 import torch
 import torch.nn as nn
 import numpy as np
@@ -522,3 +523,143 @@ class WEBPCompressionTransform:
 # TODO: JPEG 2000
 #image.save(output, format='JP2', quality_mode='dB', quality_layers=[80])  # Example with quality level 80 dB
 
+
+
+class PILAxisSwap(object):
+    """
+    Transform to randomly swap full rows or columns in the given image along the specified axis.
+    """
+    def __init__(self, axis=0, n_swaps=1):
+        """
+        Initialize the transform.
+
+        Args:
+            axis (int): Axis along which to swap rows or columns (0 for rows, 1 for columns, default is 0).
+            n_swaps (int): The number of rows/columns to be swapped (default is 1).
+        """
+        self.axis = axis
+        self.n_swaps = n_swaps
+
+    def __call__(self, img: Image.Image) -> Image.Image:
+        """
+        Apply the transformation to the input image.
+
+        Args:
+            img (PIL.Image.Image): The input PIL image.
+
+        Returns:
+            PIL.Image.Image: The modified PIL image with swapped rows/columns.
+        """
+        if not isinstance(img, Image.Image):
+            raise TypeError("Input 'img' must be a PIL Image object.")
+        
+        # Convert to a numpy array
+        image_array = np.array(img)
+        
+        if self.axis not in [0, 1]:
+            raise ValueError("axis must be 0 for rows or 1 for columns")
+        
+        # Get the total number of rows or columns
+        num_elements = image_array.shape[self.axis]
+        
+        if self.n_swaps * 2 > num_elements:
+            raise ValueError("num_swaps is too large for the size of the image along the specified axis")
+
+        # Pre-sample all necessary pairs of indices
+        indices = list(range(num_elements))
+        random.shuffle(indices)
+        swap_pairs = [(indices[i], indices[i + 1]) for i in range(0, self.n_swaps * 2, 2)]
+        
+        # Perform the swaps
+        for idx1, idx2 in swap_pairs:
+            if self.axis == 0:  # Swap rows
+                image_array[[idx1, idx2], :] = image_array[[idx2, idx1], :]
+            elif self.axis == 1:  # Swap columns
+                image_array[:, [idx1, idx2]] = image_array[:, [idx2, idx1]]
+        
+        # Convert the modified numpy array back to a PIL image
+        modified_image = Image.fromarray(image_array)
+        
+        return modified_image
+
+    def __repr__(self):
+        return self.__class__.__name__ + f'(axis={self.axis}, num_swaps={self.n_swaps})'
+
+
+
+class PILToEdgeAngleHist(object):
+    """
+    Transform to detect predominant edge angle using gradient orientation histogram.
+    """
+    def __init__(self, bins=180, startangle=0, counterclock=True, threshold=0.0, ksize=5):
+        """
+        Initialize the transform.
+
+        Args:
+            bins (int): Number of bins for the histogram.
+            startangle (int): The offset angle to start the histogram.
+            counterclock (bool): Direction of angle mapping. True for counterclockwise, False for clockwise.
+            threshold (float): Proportion of gradients with respect to magnitude to be kept, between 0.0 and 1.0.
+            ksize (int): Size of the extended Sobel kernel.
+        """
+        self.bins = bins
+        self.startangle = startangle
+        self.counterclock = counterclock
+        self.threshold = threshold
+        self.ksize = ksize
+
+    def __call__(self, img: Image.Image) -> np.ndarray:
+        """
+        Apply the transformation to the input image.
+
+        Args:
+            img (PIL.Image.Image): The input PIL image.
+
+        Returns:
+            np.ndarray: The histogram of edge orientations.
+        """
+        if not isinstance(img, Image.Image):
+            raise TypeError("Input 'img' must be a PIL Image object.")
+        if not isinstance(self.startangle, int):
+            raise ValueError("Starting angle 'startangle' must be an integer.")
+        if not 0 <= self.startangle <= 359:
+            raise ValueError("Starting angle 'startangle' value must be between 0 and 359.")
+        if not isinstance(self.counterclock, bool):
+            raise ValueError("Parameter 'counterclock' must be a boolean.")
+        if not 0.0 <= self.threshold <= 1.0:
+            raise ValueError("Threshold value must be between 0.0 and 1.0.")
+
+        # Convert to grayscale
+        image_array = np.array(img.convert('L'))
+
+        # Compute gradients
+        grad_x = cv2.Sobel(image_array, cv2.CV_64F, 1, 0, ksize=self.ksize)
+        grad_y = cv2.Sobel(image_array, cv2.CV_64F, 0, 1, ksize=self.ksize)
+
+        # Compute gradient magnitude and orientation
+        magnitude = cv2.magnitude(grad_x, grad_y)
+        orientation = cv2.phase(grad_x, grad_y, angleInDegrees=True)
+
+        # Apply offset and direction to orientation
+        if self.counterclock:
+            orientation = (360-orientation+self.startangle)%360
+        else:
+            orientation = (orientation+self.startangle)%360
+
+        # Mask out magnitudes below the relative threshold
+        normalized_magnitude = magnitude/np.max(magnitude)
+        valid_mask = normalized_magnitude>=self.threshold
+        filtered_orientation = orientation[valid_mask]
+
+        # Collapse angles that are 180 degrees apart into the same bins
+        collapsed_orientation = np.mod(filtered_orientation, 180)
+
+        # Create histogram of orientations
+        histogram, _ = np.histogram(collapsed_orientation, bins=self.bins, range=(0, 180))
+
+        return histogram
+
+    def __repr__(self):
+        return (self.__class__.__name__ + 
+                f'(bins={self.bins}, startangle={self.startangle}, '
+                f'counterclock={self.counterclock}, threshold={self.threshold}, ksize={self.ksize})')
