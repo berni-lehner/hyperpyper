@@ -591,7 +591,7 @@ class PILToEdgeAngleHist(object):
     """
     Transform to detect predominant edge angle using gradient orientation histogram.
     """
-    def __init__(self, bins=180, startangle=0, counterclock=True, threshold=0.0, ksize=5):
+    def __init__(self, bins=10, startangle=0, counterclock=True, threshold=0.0, ksize=5):
         """
         Initialize the transform.
 
@@ -640,22 +640,20 @@ class PILToEdgeAngleHist(object):
         magnitude = cv2.magnitude(grad_x, grad_y)
         orientation = cv2.phase(grad_x, grad_y, angleInDegrees=True)
 
-        # Apply offset and direction to orientation
+        # Apply offset and direction to orientation and 
+        # Collapse angles that are 180 degrees apart into the same bins
         if self.counterclock:
-            orientation = (360-orientation+self.startangle)%360
+            orientation = (360-orientation+self.startangle) % 180
         else:
-            orientation = (orientation+self.startangle)%360
+            orientation = (orientation+self.startangle) % 180
 
         # Mask out magnitudes below the relative threshold
         normalized_magnitude = magnitude/np.max(magnitude)
         valid_mask = normalized_magnitude>=self.threshold
         filtered_orientation = orientation[valid_mask]
 
-        # Collapse angles that are 180 degrees apart into the same bins
-        collapsed_orientation = np.mod(filtered_orientation, 180)
-
         # Create histogram of orientations
-        histogram, _ = np.histogram(collapsed_orientation, bins=self.bins, range=(0, 180))
+        histogram, _ = np.histogram(filtered_orientation, bins=self.bins)
 
         return histogram
 
