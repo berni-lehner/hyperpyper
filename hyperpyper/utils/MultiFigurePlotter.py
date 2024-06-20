@@ -1,5 +1,6 @@
 
 from typing import List, Tuple, Union
+import inspect
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -93,6 +94,54 @@ class MultiFigurePlotter(SubplotPlotter):
         return poly_collection
 
 
+    def _copy_instance(self, obj):
+        """Creates a copy of the given object by extracting its parameters.
+
+        Args:
+            obj: The object to be copied.
+
+        Returns:
+            A new instance of the same class as the input object with the same
+            parameters.
+        """
+        cls = obj.__class__
+        init_method = cls.__init__
+        signature = inspect.signature(init_method)
+        parameters = signature.parameters
+
+        # Initialize containers for args and kwargs
+        args = []
+        kwargs = {}
+
+        # Extract parameter values from the object
+        for param_name, param in parameters.items():
+            if param_name == 'self':
+                continue
+            try:
+                value = getattr(obj, param_name)
+            except AttributeError:
+                # Handle missing attributes gracefully
+                continue
+            
+            # Classify the parameter into args or kwargs
+            if param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD):
+                args.append(value)
+            elif param.kind == inspect.Parameter.KEYWORD_ONLY:
+                kwargs[param_name] = value
+            elif param.kind == inspect.Parameter.VAR_POSITIONAL:
+                args.extend(value)
+            elif param.kind == inspect.Parameter.VAR_KEYWORD:
+                kwargs.update(value)
+
+        # Create a new instance with the same parameters
+        if kwargs:
+            new_instance = cls(*args, **kwargs)
+        else:
+            new_instance = cls(*args)
+        
+        return new_instance
+
+
     def ax2ax(self, source_ax, target_ax) -> None:
         """
         Reproduces the contents of one Matplotlib axis onto another axis.
@@ -155,6 +204,25 @@ class MultiFigurePlotter(SubplotPlotter):
 
         # Reproduce rectangles (histogram bars)
         for artist in source_ax.__dict__['_children']:
+            # Reproduce pie chart
+            if isinstance(artist, patches.Wedge):
+                # TODO: does it make sense to implement a custom deepcopy (deepcopy does not work)?
+#                wedge = self._copy_instance(artist)
+#                target_ax.add_patch(wedge)
+                wedge = artist
+                target_ax.add_patch(
+                    patches.Wedge(
+                        wedge.center,
+                        wedge.r,
+                        wedge.theta1,
+                        wedge.theta2,
+                        width=wedge.width,
+                        edgecolor=wedge.get_edgecolor(),
+                        facecolor=wedge.get_facecolor(),
+                        linewidth=wedge.get_linewidth(),
+                        linestyle=wedge.get_linestyle(),
+                    )
+                )
             if isinstance(artist, patches.Rectangle):
                 rect = artist
                 # Retrieve properties of each rectangle and reproduce it on the target axis
@@ -174,7 +242,7 @@ class MultiFigurePlotter(SubplotPlotter):
                         target_ax.add_collection(poly_collection)
 
         # Reproduce collections (e.g., LineCollection)
-        for collection in source_ax.collections:
+        for collection in source_ax.collections:                
             if isinstance(artist, PolyCollection):
                 print("collections.PolyCollection")
 
