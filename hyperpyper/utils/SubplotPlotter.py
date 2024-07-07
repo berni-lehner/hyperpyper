@@ -13,7 +13,8 @@ class SubplotPlotter:
                 suptitle: Union[str, None] = None,
                 suptitle_fontsize: Union[int, None] = None,
                 suptitle_fontweight: Union[str, None] = None,
-                figsize: Union[Tuple[float, float], None] = None):
+                figsize: Union[Tuple[float, float], None] = None,
+                facecolor = None):
         """
         Constructs a SubplotPlotter object.
 
@@ -33,6 +34,7 @@ class SubplotPlotter:
         self.suptitle_fontsize: Union[int, None] = suptitle_fontsize
         self.suptitle_fontweight: Union[str, None] = suptitle_fontweight
         self.figsize: Union[Tuple[float, float], None] = figsize
+        self.facecolor = facecolor
 
         self.fig = None
         self.axes = None
@@ -54,6 +56,9 @@ class SubplotPlotter:
             plt.suptitle(self.suptitle, fontsize=self.suptitle_fontsize, fontweight=self.suptitle_fontweight)
             
         self.fig.tight_layout()
+
+        if self.facecolor is not None:
+            self.fig.set_facecolor(self.facecolor)
 
 
     def _create_subplots(self) -> None:

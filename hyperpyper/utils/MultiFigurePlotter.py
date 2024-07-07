@@ -19,7 +19,8 @@ class MultiFigurePlotter(SubplotPlotter):
                 suptitle: Union[str, None] = None,
                 suptitle_fontsize: Union[int, None] = None,
                 suptitle_fontweight: Union[str, None] = None,
-                figsize: Union[Tuple[float, float], None] = None):
+                figsize: Union[Tuple[float, float], None] = None,
+                facecolor = None):
         """
         Constructs a MultiFigurePlotter object.
 
@@ -40,7 +41,8 @@ class MultiFigurePlotter(SubplotPlotter):
             suptitle=suptitle,
             suptitle_fontsize=suptitle_fontsize,
             suptitle_fontweight=suptitle_fontweight,
-            figsize=figsize)
+            figsize=figsize,
+            facecolor=facecolor)
 
     def plot(self) -> Figure:
         """
