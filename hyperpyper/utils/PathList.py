@@ -15,6 +15,9 @@ class PathList:
         if paths is None:
             self.paths = []
         else:
+            if not isinstance(paths, list):
+                paths = [paths]  # Convert single path to list
+
             self.paths = [Path(path) if isinstance(path, str) else path for path in paths]
 
 
@@ -33,6 +36,15 @@ class PathList:
         else:
             raise TypeError(f"Unsupported type for concatenation: {type(other)}")
 
+
+    def __sub__(self, other):
+        """
+        Remove the specified path items from the list.        
+        """
+        if isinstance(other, str) or isinstance(other, Path) or isinstance(other, PathList) or isinstance(other, list):
+            return self.remove(other)
+        else:
+             raise TypeError(f"Unsupported type for path subtraction: {type(other)}")
 
 
     def __truediv__(self, other):
@@ -146,3 +158,51 @@ class PathList:
             self.paths = [Path(str(path).replace(str(find), str(replace))) for path in self.paths]
         else:
             raise TypeError("Unsupported type for find/replace.")
+
+
+    def to_csv(self, file_name):
+        """
+        Saves the list of paths as a CSV file.
+
+        Args:
+            file_name (str): The name of the file where the CSV should be saved.
+        """        
+        df = pd.DataFrame([str(path) for path in self.paths], columns=['path'])
+
+        df.to_csv(file_name, index=False, header=False)
+
+
+    def relative_to(self, path):
+        """
+        Converts the list of paths into the relative paths to another path identified by the passed arguments.
+
+        Args:
+            path (str or pathlib.Path): The path to compute relative paths to.
+
+        Returns:
+            PathList: A new PathList with the relative paths.
+        """
+        filtered_paths = PathList([Path(p.relative_to(path)) for p in self.paths])
+
+        return filtered_paths
+
+
+    def remove(self, paths=None):
+        """
+        Remove specified paths from the PathList.
+
+        Args:
+            paths (str, pathlib.Path, list, or None): The paths to remove. If None, no paths are removed.
+
+        Returns:
+            PathList: A new PathList with the specified paths removed.
+        """
+        if paths is None:
+            return
+        else:
+            if not isinstance(paths, PathList):
+                paths = PathList(paths)
+
+        filtered_paths = PathList([p for p in self.paths if p not in paths.paths])
+
+        return filtered_paths
