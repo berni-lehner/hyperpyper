@@ -127,7 +127,7 @@ class EmbeddingPlotter:
         return density
     
 
-    def load_image(self, filename: str):
+    def load_image(self, file_name: str):
         with open(filename, "rb") as f:
                 im = f.read()
         return im        
