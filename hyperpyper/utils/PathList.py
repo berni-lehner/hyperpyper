@@ -1,4 +1,5 @@
 from pathlib import Path
+import pandas as pd
 
 
 class PathList:
@@ -15,9 +16,6 @@ class PathList:
         if paths is None:
             self.paths = []
         else:
-            if not isinstance(paths, list):
-                paths = [paths]  # Convert single path to list
-
             self.paths = [Path(path) if isinstance(path, str) else path for path in paths]
 
 
@@ -162,14 +160,29 @@ class PathList:
 
     def to_csv(self, file_name):
         """
-        Saves the list of paths as a CSV file.
+        Saves the list of paths as a .csv file.
 
         Args:
             file_name (str): The name of the file where the CSV should be saved.
-        """        
+        """
         df = pd.DataFrame([str(path) for path in self.paths], columns=['path'])
 
         df.to_csv(file_name, index=False, header=False)
+
+
+    def read_csv(self, file_name):
+        """
+        Reads the list of paths from a .csv file.
+
+        Args:
+            file_name (str): The name of the file where the paths are saved.
+
+        Returns:
+            PathList: A new PathList with the imported paths.
+        """
+        df = pd.read_csv(file_name, header=None)
+
+        return PathList(df[0].tolist())
 
 
     def relative_to(self, path):
