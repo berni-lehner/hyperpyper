@@ -1,13 +1,14 @@
-import numpy as np
 from typing import List, Tuple, Union, Optional
+from pathlib import Path
 from PIL import Image
-from matplotlib.figure import Figure
 
-from ..utils import SubplotPlotter
 
-class MultiImagePlotter(SubplotPlotter):
+from ..plotting import MultiImagePlotter
+
+class MultiImageFilePlotter(MultiImagePlotter):
     def __init__(self,
-                images,
+                files,
+                mode: str = 'RGB',
                 titles = [],
                 title_prefix = '',
                 title_postfix = '',
@@ -19,10 +20,10 @@ class MultiImagePlotter(SubplotPlotter):
                 suptitle_fontweight: Union[str, None] = None,
                 figsize: Union[Tuple[float, float], None] = None):
         """
-        Draws the given images in the specified layout.
+        Draws the given image files in the specified layout.
 
         Args:
-            images (List[PIL]): List of images to be plotted.
+            
             titles (list, optional): If given, display list items as titles for each sample. Default is empty.
             title_prefix (str): Prefix string to be added to each title.
             title_postfix (str): Postfix string to be added to each title.
@@ -34,43 +35,31 @@ class MultiImagePlotter(SubplotPlotter):
             suptitle_fontweight (str): Font weight for the super title.
             figsize (tuple): The size of the entire figure in inches (width, height).
         """
-        self.images = images
-        self.titles = titles
-        self.title_prefix = title_prefix
-        self.title_postfix = title_postfix
-        self.frame: bool = frame
+        self.files = files
+        self.mode = mode
+        self.images = []
+        self._load_images()
 
-        super().__init__(n_subplots=len(images),
+
+        super().__init__(
+            images=self.images,
+            titles=titles,
+            title_prefix=title_prefix,
+            title_postfix=title_postfix,
             layout=layout,
             rotate=rotate,
+            frame=frame,
             suptitle=suptitle,
             suptitle_fontsize=suptitle_fontsize,
             suptitle_fontweight=suptitle_fontweight,
             figsize=figsize)
 
 
-    def plot(self) -> Figure:
+    def _load_images(self) -> None:
         """
-        Draws the images.
+        Load images from a list of filenames.
         """
-        for i in range(self.n_subplots):
-            ax = self.axes[i]
-
-            img = self.images[i]
-            ax.imshow(img)
-
-            # Format and set title string
-            if len(self.titles) > 0:
-                lbl = self.titles[i]
-                if(isinstance(lbl, (float, np.float16, np.float32))):
-                    lbl = f"{self.titles[i]:.3f}"
-                ax.set_title(f"{self.title_prefix}{lbl}{self.title_postfix}")
-
-            ax.tick_params(left=False, right=False, labelleft=False, labelbottom=False, bottom=False)
-
-            if not self.frame:
-                ax.axis("off")
-
-        super()._finish_plot()
-
-        return self.fig
+        for file in self.files:
+            file_path = Path(file) if isinstance(file, str) else file
+            image = Image.open(file_path).convert(self.mode)
+            self.images.append(image)

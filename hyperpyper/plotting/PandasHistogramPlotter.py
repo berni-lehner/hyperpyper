@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 from matplotlib.colors import Colormap
 
-from ..utils import HistogramPlotter
+from ..plotting import HistogramPlotter
 
 class PandasHistogramPlotter(HistogramPlotter):
     def __init__(self,

@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 from matplotlib.artist import Artist
 from matplotlib.transforms import BlendedGenericTransform # to check if a line was plotted with axvline or axhline
 
-from ..utils import SubplotPlotter
+from ..plotting import SubplotPlotter
 
 class MultiFigurePlotter(SubplotPlotter):
     def __init__(self,
