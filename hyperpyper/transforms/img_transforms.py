@@ -14,6 +14,9 @@ from typing import Union, List
 
 
 class FileToPIL:
+    """
+    Transform to load a PIL image from a given file.
+    """
     def __init__(self, mode: str='RGB'):
         self.mode = mode
 
@@ -44,6 +47,9 @@ class FileToPIL:
     
 
 class DummyPIL:
+    """
+    Transform to create a dummy image.
+    """
     def __init__(self, dummy=None):
         self.dummy = dummy
 
@@ -56,10 +62,8 @@ class DummyPIL:
         """
         Create and return a dummy PIL image.
 
-
         Returns:
             A PIL image.
-
         """            
         return self.dummy
  
@@ -89,6 +93,9 @@ class NumpyToPIL:
 
 
 class PILtoHist:
+    """
+    Transform to extract the colot histogram of the input image.
+    """
     def __init__(self, bins=256):
         self.bins = bins
 
@@ -122,6 +129,9 @@ class PILtoHist:
 
 
 class PILTranspose:
+    """
+    Transform to transpose the input image.
+    """
     def __call__(self, img):
         """
         Transpose the input image.
