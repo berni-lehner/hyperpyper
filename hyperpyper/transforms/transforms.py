@@ -7,7 +7,7 @@ import numpy as np
 import PIL
 from PIL import Image
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Dict, Any
 
 
 class FlattenArray:
@@ -223,5 +223,40 @@ class CachingTransform:
             print(filename)
 
         return os.path.join(self.cache_folder, filename)
+
+
+class FeatureUnion:
+    """A custom feature union to pass an arbitrary input to multiple transforms.
     
+    The input is passed to all the provided transforms, and the results are returned
+    as a dictionary with the transform names as keys.
     
+    Args:
+        transforms (List[Any]): A list of transforms to apply to the input.
+    """
+    def __init__(self, transforms: List[Any]):
+        self.transforms = transforms
+
+
+    def __call__(self, input_data: Any) -> Dict[str, Any]:
+        """Apply all transforms to the input data and return the aggregated results.
+        
+        Args:
+            input_data (Any): The input to be passed to the transforms.
+        
+        Returns:
+            Dict[str, Any]: A dictionary of extracted features, where the keys are 
+                the string representation of the transforms and the values are the 
+                transformed results.
+        """
+        features = {}
+
+        # Apply each transform to the input data and aggregate the results
+        for transform in self.transforms:
+            feature_name = str(transform)
+            features[feature_name] = transform(input_data)
+        
+        return features
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(transforms={self.transforms})"
