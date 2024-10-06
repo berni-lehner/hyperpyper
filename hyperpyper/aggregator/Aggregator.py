@@ -70,7 +70,6 @@ class DataLoaderAggregator:
         # Separate items from the batch_list
         for batch in batch_list:
             for key, value in batch.items():
-                from icecream import ic
 
                 if isinstance(value, dict):
                     if key not in full_batch:
