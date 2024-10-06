@@ -70,11 +70,26 @@ class DataLoaderAggregator:
         # Separate items from the batch_list
         for batch in batch_list:
             for key, value in batch.items():
-                if key not in full_batch:
-                    full_batch[key] = []
+                from icecream import ic
+
+                if isinstance(value, dict):
+                    if key not in full_batch:
+                        full_batch[key] = {}
+                else:
+                    if key not in full_batch:
+                        full_batch[key] = []
+
+                # Check if the values are in a dict (e.g., the result of a FeatureUnion)
+                if isinstance(value, dict):
+                    # For each feature extracted by FeatureUnion, we have a dictionary of tensors
+                    for sub_key, sub_value in value.items():
+                        if sub_key not in full_batch[key]:
+                            full_batch[key][sub_key] = []
+                        
+                        full_batch[key][sub_key].extend(sub_value)
 
                 # Check if the values are list of tuples (specifically, filenames)
-                if isinstance(value[0], tuple):
+                elif isinstance(value[0], tuple):
                     # Flatten the list of tuples and append to the full_batch
                     full_batch[key].extend(sum(value, ()))
                 else:
@@ -83,8 +98,13 @@ class DataLoaderAggregator:
 
         # Process each key-value pair in the full_batch dictionary
         for key, value in full_batch.items():
+            if isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    if isinstance(sub_value[0], torch.Tensor):
+                        full_batch[key][sub_key] = torch.stack(sub_value)
+
             # Check if the values are of type Tensor, Numpy array, or list of Tensors
-            if isinstance(value[0], torch.Tensor):
+            elif isinstance(value[0], torch.Tensor):
                 full_batch[key] = torch.cat(value, dim=0)
             elif isinstance(value[0], np.ndarray):
                 full_batch[key] = np.concatenate(value, axis=0)
