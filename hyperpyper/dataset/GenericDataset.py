@@ -4,7 +4,6 @@ from pathlib import Path
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
-#from ..utils.PathList import PathList
 from ..utils import PathList
 
 
