@@ -30,7 +30,10 @@ todo
 todo
 
 ## Demos <a name="demos"></a>
-The notebooks contain ...
+The notebooks contain demos and tutorials for several usecases where ```hyperpyper``` is utilized.
+
+- **Image processing**
+    - [Extracting histograms from CIFAR10](https://github.com/berni-lehner/hyperpyper/blob/main/CIFAR10_hist_demo.ipynb)
 
 - **Utility classes**
     - [EmbeddingPlotter](https://github.com/berni-lehner/hyperpyper/blob/main/EmbeddingPlotter_demo.ipynb)
