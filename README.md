@@ -34,6 +34,7 @@ The notebooks contain demos and tutorials for several usecases where ```hyperpyp
 
 - **Image processing**
     - [Extracting histograms from CIFAR10](https://github.com/berni-lehner/hyperpyper/blob/main/CIFAR10_hist_demo.ipynb)
+    - [Extracting features from CIFAR10](https://github.com/berni-lehner/hyperpyper/blob/main/CIFAR10_features_demo.ipynb)
 
 - **Utility classes**
     - [EmbeddingPlotter](https://github.com/berni-lehner/hyperpyper/blob/main/EmbeddingPlotter_demo.ipynb)
