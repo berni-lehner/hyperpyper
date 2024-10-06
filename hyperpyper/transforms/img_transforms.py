@@ -94,7 +94,7 @@ class NumpyToPIL:
 
 class PILtoHist:
     """
-    Transform to extract the colot histogram of the input image.
+    Transform to extract the color histogram of the input image.
     """
     def __init__(self, bins=256):
         self.bins = bins
