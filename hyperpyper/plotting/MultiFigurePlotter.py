@@ -4,7 +4,7 @@ import inspect
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.collections import LineCollection, PathCollection, PolyCollection
+from matplotlib.collections import LineCollection, PathCollection, PolyCollection, QuadMesh
 from matplotlib.figure import Figure
 from matplotlib.artist import Artist
 from matplotlib.transforms import BlendedGenericTransform # to check if a line was plotted with axvline or axhline
@@ -284,6 +284,21 @@ class MultiFigurePlotter(SubplotPlotter):
                 scatter = target_ax.scatter(x_data, y_data, **properties)
                 # Reproduce remaining properties of marker
                 scatter.set_paths(collection.get_paths())
+
+            # Reproduce QuadMesh (pcolormesh)
+            if isinstance(collection, QuadMesh):
+                mesh = collection
+                target_ax.pcolormesh(mesh.get_array(),
+                                     cmap=mesh.cmap,
+                                     edgecolors=mesh.get_edgecolors(),
+                                     linewidths=mesh.get_linewidths(),
+                                     #shading=mesh.get_shading(), # TODO: how can we reproduce shading?
+                                     alpha=mesh.get_alpha())
+
+                # Reproduce the colorbar
+                if source_ax.get_figure().colorbar:  # Check if a colorbar exists
+                    colorbar = source_ax.get_figure().colorbar
+                    target_ax.get_figure().colorbar(mesh, ax=target_ax)
 
         # Reproduce images
         for img in source_ax.images:
