@@ -290,14 +290,16 @@ class MultiFigurePlotter(SubplotPlotter):
                 mesh = collection
                 target_ax.pcolormesh(mesh.get_array(),
                                      cmap=mesh.cmap,
+                                     norm=mesh.norm,
                                      edgecolors=mesh.get_edgecolors(),
                                      linewidths=mesh.get_linewidths(),
-                                     #shading=mesh.get_shading(), # TODO: how can we reproduce shading?
-                                     alpha=mesh.get_alpha())
+                                     shading=mesh._shading,
+                                     alpha=mesh.get_alpha(),
+                                     zorder=mesh.get_zorder())
 
-                # Reproduce the colorbar
-                if source_ax.get_figure().colorbar:  # Check if a colorbar exists
-                    colorbar = source_ax.get_figure().colorbar
+                # Reproduce the colorbar 
+                if mesh.colorbar:
+                    colorbar = mesh.colorbar
                     target_ax.get_figure().colorbar(mesh, ax=target_ax)
 
         # Reproduce images
