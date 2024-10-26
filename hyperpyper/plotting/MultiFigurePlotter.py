@@ -288,7 +288,8 @@ class MultiFigurePlotter(SubplotPlotter):
             # Reproduce QuadMesh (pcolormesh)
             if isinstance(collection, QuadMesh):
                 mesh = collection
-                target_ax.pcolormesh(mesh.get_array(),
+
+                target_mesh = target_ax.pcolormesh(mesh.get_array(),
                                      cmap=mesh.cmap,
                                      norm=mesh.norm,
                                      edgecolors=mesh.get_edgecolors(),
@@ -296,6 +297,8 @@ class MultiFigurePlotter(SubplotPlotter):
                                      shading=mesh._shading,
                                      alpha=mesh.get_alpha(),
                                      zorder=mesh.get_zorder())
+                # Reproduce coordinate grid
+                target_mesh._coordinates = mesh._coordinates
 
                 # Reproduce the colorbar 
                 if mesh.colorbar:
