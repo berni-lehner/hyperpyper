@@ -128,9 +128,9 @@ class EmbeddingPlotter:
     
 
     def load_image(self, file_name: str):
-        with open(filename, "rb") as f:
+        with open(file_name, "rb") as f:
                 im = f.read()
-        return im        
+        return im
 
 
     def plot(self):
